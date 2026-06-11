@@ -30,8 +30,12 @@ npm run verify     # check + build
 | `src/pages/` | Routes |
 | `src/content/blog/`, `src/content/work/` | Markdown content (posts, case studies) |
 | `CLAUDE.md` | Operator's manual for agents working on this repo |
+| `DESIGN-BRIEF.md` | Hand-off pack for the Claude Design / visual-polish loop |
+| `docs/design-brief-shots/` | Current-state screenshots of every page (375/768/1280) |
 | `Content-Decisions.md` | Real-world facts & brand forks awaiting Krisztian — **check before inventing any content** |
 | `ReleaseNotes.txt` | Running change log |
+
+> **Blog is built but hidden** — `/blog` pages still render, but Blog is removed from the nav, footer, and homepage. Re-add the nav entries in `Header.astro` / `Footer.astro` to launch it. Nav order: Services · Case Studies · About · Contact (the `/work/` route is labelled "Case Studies" in the UI).
 
 ## Deploy
 
@@ -41,6 +45,14 @@ Secrets (form endpoint, analytics) live in Vercel environment variables — neve
 
 ## Drop-in contracts
 
-- **Hero video:** place the file at `public/video/hero.mp4` (optional poster: `public/video/hero-poster.jpg`), commit, push. The hero detects it at build time; nothing else changes. Until then a static treatment renders.
-- **Logo SVGs:** five colorways (forest, pine, sage, bone, honey) live at `src/assets/logo-*.svg`. If they need re-exporting, source is `Rubicon_Logo.ai` (kept out of git — 21 MB).
+- **Hero video:** lives at `public/video/hero.mp4` (+ poster `hero-poster.jpg`) and the hero auto-detects it at build time. To swap in a new cut, drop the file there, commit, push — nothing else changes. **Compress before committing** (a hero background should be ~2–5 MB): `ffmpeg -i <new>.mp4 -an -c:v libx264 -crf 28 -preset slow -movflags +faststart public/video/hero.mp4`. Heavy source masters go in `_assets-source/` (gitignored), not the repo.
+- **Logo SVGs:** five colorways (forest, pine, sage, bone, honey) live at `src/assets/logo-*.svg`, plus `public/favicon.svg` and PNG fallbacks. Extracted from `Rubicon_Logo.ai` (kept out of git — 21 MB).
 - **Contact form:** set `PUBLIC_FORMSPREE_ENDPOINT` in Vercel (and a local `.env` for testing). The form renders disabled with a TODO badge until the endpoint exists.
+
+## Helper scripts (`scripts/`)
+
+- `screenshot.mjs <url> <outDir> <name>` — full-page captures at 375/768/1280 with horizontal-overflow check.
+- `interaction-checks.mjs` — keyboard focus order, mobile menu toggle, contact-form disabled state.
+- `hero-video-check.mjs <outDir>` — confirms the hero video loads, plays, and caps opacity.
+
+All use `playwright-core` against the installed Chrome (no browser download).

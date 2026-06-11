@@ -2,6 +2,21 @@ RUBICON WORKFLOWS WEBSITE — RELEASE NOTES
 Running log of changes. Newest entries at top.
 
 =========================================================
+2026-06-10 — Design brief + docs sync (Session 1, part 5)
+=========================================================
+- DESIGN-BRIEF.md added: complete hand-off pack for the Claude Design /
+  visual-polish loop (brand law, token system, component + page
+  inventory, hero-video constraints, quality gates, port-back workflow).
+- docs/design-brief-shots/: all 8 pages at 375/768/1280, video hero live.
+  NOTE for Claude Design: it ingests IMAGES, not video — feed it the
+  poster (public/video/hero-poster.jpg) or 01-home-desktop.png, not the
+  MP4. The shipped hero video itself is public/video/hero.mp4 (2.39 MB).
+- README.md updated: blog-hidden note + nav order, DESIGN-BRIEF/docs in
+  the map, hero-video swap+compress instructions, _assets-source/
+  convention, and the scripts/ helper list.
+- No code changes; Content-Decisions.md and this log already current.
+
+=========================================================
 2026-06-10 — Hero video live (Session 1, part 4)
 =========================================================
 - Krisztian's hero video wired in. Source "Rubicon Website Hero
