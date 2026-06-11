@@ -7,9 +7,11 @@ interface Props {
   description: string;
   pubDate: Date;
   href: string;
+  /** Heading level — keep the page outline valid (h2 under both page h1s and section h2s). */
+  as?: 'h2' | 'h3';
 }
 
-const { title, description, pubDate, href } = Astro.props;
+const { title, description, pubDate, href, as: Tag = 'h2' }: Props = Astro.props;
 
 const dateLabel = pubDate.toLocaleDateString('en-CA', {
   year: 'numeric',
@@ -22,9 +24,9 @@ const dateLabel = pubDate.toLocaleDateString('en-CA', {
   <p class="post-card__date">
     <time datetime={pubDate.toISOString().slice(0, 10)}>{dateLabel}</time>
   </p>
-  <h3 class="post-card__title">
+  <Tag class="post-card__title">
     <a href={href}>{title}</a>
-  </h3>
+  </Tag>
   <p class="post-card__desc">{description}</p>
 </article>
 
@@ -44,6 +46,9 @@ const dateLabel = pubDate.toLocaleDateString('en-CA', {
 
   .post-card__title {
     margin-top: var(--space-2);
+    font-size: var(--text-h3);
+    line-height: var(--lh-h3);
+    letter-spacing: var(--track-h3);
   }
 
   .post-card__title a {

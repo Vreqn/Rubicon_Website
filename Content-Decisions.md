@@ -48,9 +48,9 @@ Real-world facts and brand forks that aren't the agent's to decide. Each entry: 
 
 ## 7. Logo SVG source
 
-- **Issue:** Only `Rubicon_Logo.ai` exists. The build needs five SVG colorways + favicon. An automated extraction from the .ai was attempted — see ReleaseNotes for outcome. If extraction was unusable: Krisztian exports SVGs from Illustrator (File → Export → SVG, one per colorway).
-- **Why:** The mark must come from the real source file — never fabricated.
-- **Options:** (a) Accept extracted SVGs; (b) export from Illustrator.
+- **Issue:** Only `Rubicon_Logo.ai` existed. The vector path was extracted programmatically from the .ai (it's PDF-compatible: one page, one path, filled Sage) into `src/assets/logo-mark.svg`, verified pixel-faithful against a render of the original, and used to generate the five colorways + `public/favicon.svg` (auto Forest-on-light / Sage-on-dark) + PNG fallbacks. 16px favicon legibility verified.
+- **Why:** The mark must come from the real source file — never fabricated. It did; Krisztian should still eyeball the rendered mark in the site header.
+- **Options:** (a) Accept extracted SVGs (recommended — they are the original path data); (b) re-export from Illustrator if anything looks off.
 - **Decision:**
 
 ## 8. Hero video footage

@@ -141,10 +141,15 @@
    Usage: <section data-surface="dark|light|forest">
    ========================================================================== */
 
+/* --accent-text: accent for READABLE text (eyebrows, small labels) — must
+   pass AA on its surface. Sage-on-Pine 5.9:1 and Forest-on-Bone 8.3:1 pass;
+   Sage-on-Forest is only ~3.4:1, so the forest surface promotes to Bone. */
+
 [data-surface="dark"] {
   --bg: var(--pine);
   --fg: var(--bone);
   --accent: var(--sage);
+  --accent-text: var(--sage);
   --accent-2: var(--honey);
   --muted: var(--text-muted-on-dark);
   --line: var(--line-on-dark);
@@ -156,6 +161,7 @@
   --bg: var(--bone);
   --fg: var(--pine);
   --accent: var(--forest);
+  --accent-text: var(--forest);
   --accent-2: var(--slate);
   --muted: var(--text-muted-on-light);
   --line: var(--line-on-light);
@@ -167,6 +173,7 @@
   --bg: var(--forest);
   --fg: var(--bone);
   --accent: var(--sage);
+  --accent-text: var(--bone);
   --accent-2: var(--honey);
   --muted: color-mix(in srgb, var(--bone) 80%, var(--forest));
   --line: color-mix(in srgb, var(--bone) 22%, transparent);

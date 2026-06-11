@@ -1,8 +1,9 @@
 ---
 /**
  * Mono kicker label above sections, e.g. "~ OUR APPROACH".
- * Color is var(--accent): Sage on dark (brand spec), Forest on light —
- * Sage-on-Bone is ~2.5:1 and may not be used for readable text (AA).
+ * Color is var(--accent-text): Sage on dark (brand spec), Forest on light,
+ * Bone on forest — every pairing passes AA for readable text. Raw Sage is
+ * NOT used on Bone/Forest surfaces (~2.5:1 / ~3.4:1, decorative only).
  */
 interface Props {
   tilde?: boolean;
@@ -22,6 +23,6 @@ const { tilde = true, class: className } = Astro.props;
     line-height: var(--lh-eyebrow);
     letter-spacing: var(--track-eyebrow);
     text-transform: uppercase;
-    color: var(--accent, var(--sage));
+    color: var(--accent-text, var(--sage));
   }
 </style>

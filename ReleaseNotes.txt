@@ -2,6 +2,45 @@ RUBICON WORKFLOWS WEBSITE — RELEASE NOTES
 Running log of changes. Newest entries at top.
 
 =========================================================
+2026-06-10 — Quality gates green (Session 1, part 2)
+=========================================================
+- Logo: vector path extracted from Rubicon_Logo.ai via pymupdf (the .ai is
+  PDF-compatible; single path, filled Sage). Generated logo-mark.svg
+  (currentColor) + 5 colorway SVGs + favicon.svg (prefers-color-scheme
+  aware: Forest on light tabs, Sage on dark) + favicon/touch-icon PNGs +
+  placeholder og-default.png (Pine + Sage mark). 16px legibility verified.
+- A11y fixes found by gates:
+  * PillarsTicker had role="list" with an intermediate track div —
+    removed redundant ARIA roles, native <ul> semantics suffice.
+  * NEW TOKEN --accent-text per surface: readable accent text (eyebrows).
+    Sage-on-Forest measured ~3.4:1 (AA fail) on the About hero, so the
+    forest surface promotes accent text to Bone (8.3:1). Dark stays Sage
+    (5.9:1), light stays Forest (8.3:1).
+  * PostCard/CaseStudyCard heading levels now props (as="h2|h3") so card
+    grids never skip a level under page h1s vs section h2s.
+- Eyebrow rendering rule: uses --accent-text, never raw Sage on light or
+  forest surfaces.
+- Gate results (local preview, production build):
+  * astro check: 0 errors / 0 warnings / 0 hints
+  * astro build: 9 pages, clean
+  * linkinator (excluding not-yet-live rubiconworkflows.ca canonicals):
+    13/13 links OK
+  * Lighthouse desktop, all 6 key pages: Perf 100 / A11y 100 / SEO 100.
+    Best Practices 81 = is-on-https only (localhost artifact; Vercel
+    serves HTTPS).
+  * Responsive 375/768/1280 via scripts/screenshot.mjs: 0px horizontal
+    overflow on all 7 pages; hanging mono index collapses correctly
+    below 768px. NOTE: raw `chrome --headless --window-size=375,...`
+    lies (Chrome min window width ~500px) — use the playwright script.
+  * Keyboard: skip-link first tab stop, visible focus rings, mobile menu
+    toggles with aria-expanded. (scripts/interaction-checks.mjs)
+  * Contact form: VERIFIED DISABLED (no endpoint) — submit disabled,
+    action="#", visible TODO badge. Real submission test is
+    blocked-on-owner (Formspree account, Content-Decisions #14).
+- Dev tooling: playwright-core (devDependency, drives installed Chrome,
+  no browser download) + scripts/screenshot.mjs + interaction-checks.mjs.
+
+=========================================================
 2026-06-10 — Initial scaffold (Session 1)
 =========================================================
 - Greenfield scaffold created manually (no `npm create astro` — the wizard

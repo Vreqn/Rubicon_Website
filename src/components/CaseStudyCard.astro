@@ -9,17 +9,19 @@ interface Props {
   description: string;
   sector: string;
   href: string;
+  /** Heading level — h3 under a section h2 (homepage), h2 under a page h1 (work index). */
+  as?: 'h2' | 'h3';
 }
 
-const { title, description, sector, href } = Astro.props;
+const { title, description, sector, href, as: Tag = 'h3' }: Props = Astro.props;
 const sectorLabel = sector.replace(/-/g, ' ');
 ---
 
 <article class="cs-card">
   <p class="cs-card__sector">~ {sectorLabel}</p>
-  <h3 class="cs-card__title">
+  <Tag class="cs-card__title">
     <a href={href}>{title}</a>
-  </h3>
+  </Tag>
   <p class="cs-card__desc">{description}</p>
   <span class="cs-card__cta" aria-hidden="true">
     Read the case study <Icon name="arrow-right" size={16} />
@@ -49,6 +51,12 @@ const sectorLabel = sector.replace(/-/g, ' ');
     letter-spacing: var(--track-eyebrow);
     text-transform: uppercase;
     color: var(--accent);
+  }
+
+  .cs-card__title {
+    font-size: var(--text-h3);
+    line-height: var(--lh-h3);
+    letter-spacing: var(--track-h3);
   }
 
   .cs-card__title a {

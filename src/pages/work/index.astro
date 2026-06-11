@@ -28,6 +28,7 @@ const caseStudies = (await getCollection('work', ({ data }) => !data.draft)).sor
           {caseStudies.map((cs) => (
             <li>
               <CaseStudyCard
+                as="h2"
                 title={cs.data.title}
                 description={cs.data.description}
                 sector={cs.data.sector}
