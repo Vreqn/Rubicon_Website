@@ -9,15 +9,10 @@ import Section from '../components/Section.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import Icon from '../components/Icon.astro';
 import CaseStudyCard from '../components/CaseStudyCard.astro';
-import PostCard from '../components/PostCard.astro';
 
 const caseStudies = (await getCollection('work', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
-
-const posts = (await getCollection('blog', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
 
 // The four pillars — copy verbatim from Brand Guidelines §1.
 const pillars = [
@@ -112,10 +107,10 @@ const jsonLd = {
     </ul>
   </Section>
 
-  <!-- Our work — dark ("case study cards on a moody canvas") -->
+  <!-- Case studies — dark ("case study cards on a moody canvas") -->
   <Section surface="dark" id="work">
     <SectionHeader
-      eyebrow="Our work"
+      eyebrow="Case studies"
       title="Real bottlenecks, solved one step at a time"
     />
     {
@@ -141,32 +136,6 @@ const jsonLd = {
         </div>
       )
     }
-  </Section>
-
-  <!-- Blog teaser — light (reading surface) -->
-  <Section surface="light" id="writing">
-    <SectionHeader
-      eyebrow="From the blog"
-      title="How we think about automation"
-      lede="We're a teaching brand: plain-language writing on what automation is, what it isn't, and where to start."
-    />
-    {
-      posts.length > 0 && (
-        <div class="post-list">
-          {posts.map((post) => (
-            <PostCard
-              title={post.data.title}
-              description={post.data.description}
-              pubDate={post.data.pubDate}
-              href={`/blog/${post.id}/`}
-            />
-          ))}
-        </div>
-      )
-    }
-    <p class="more-link">
-      <a href="/blog/">All posts &rarr;</a>
-    </p>
   </Section>
 
   <!-- Forest CTA band — the one signature-surface moment on this page -->
@@ -262,21 +231,6 @@ const jsonLd = {
 
   .work-empty a {
     color: var(--accent);
-  }
-
-  /* ---- Blog teaser ---- */
-  .more-link {
-    margin-top: var(--space-8);
-  }
-
-  .more-link a {
-    color: var(--accent);
-    text-decoration: none;
-    font-weight: 500;
-  }
-
-  .more-link a:hover {
-    text-decoration: underline;
   }
 
   /* ---- Forest CTA band ---- */

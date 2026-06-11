@@ -2,6 +2,25 @@ RUBICON WORKFLOWS WEBSITE — RELEASE NOTES
 Running log of changes. Newest entries at top.
 
 =========================================================
+2026-06-10 — Content decisions + structure (Session 1, part 3)
+=========================================================
+- Content-Decisions #1 RESOLVED: Services page now lists five real
+  capability areas (no packages/pricing) under "What we build" —
+  automated reporting, connecting systems, data entry automation,
+  document processing, verification & summarization tools. Added 6 new
+  brand-spec icons (chart, nodes, intake, document, check-circle).
+- Structure changes (Krisztian):
+  * Blog HIDDEN from nav, footer, and homepage teaser. /blog pages still
+    build and work via direct link — nothing deleted. Re-add the nav
+    entries (Header.astro / Footer.astro) when ready to launch it.
+  * Nav reordered: Services · Case Studies · About · Contact.
+  * "Work" retitled to "Case Studies" everywhere user-facing (nav,
+    footer, /work page h1 + title + eyebrow, homepage section, case-study
+    backlink). Route path stays /work/ (unchanged URLs).
+- PostCard component now only used by the (hidden) blog index — kept.
+- astro check/build clean; 0px overflow at 375/768/1280 on home+services.
+
+=========================================================
 2026-06-10 — Quality gates green (Session 1, part 2)
 =========================================================
 - Logo: vector path extracted from Rubicon_Logo.ai via pymupdf (the .ai is

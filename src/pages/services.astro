@@ -4,10 +4,38 @@ import Section from '../components/Section.astro';
 import Eyebrow from '../components/Eyebrow.astro';
 import Icon from '../components/Icon.astro';
 import Button from '../components/Button.astro';
-import Todo from '../components/Todo.astro';
 
-// Pillar copy verbatim from Brand Guidelines §1. The actual services list
-// is a real-world fact — Content-Decisions #1.
+// Capability areas confirmed by Krisztian 2026-06-10 (Content-Decisions #1,
+// resolved): no packages, no pricing — plain-language areas of work.
+const capabilities = [
+  {
+    icon: 'chart',
+    title: 'Automated reporting',
+    body: 'The weekly report that eats someone’s morning builds and sends itself — same numbers, same format, on time, every time.',
+  },
+  {
+    icon: 'nodes',
+    title: 'Connecting systems',
+    body: 'When two tools don’t talk, somebody becomes the messenger. We build the connection so data moves on its own, accurately, in both directions.',
+  },
+  {
+    icon: 'intake',
+    title: 'Data entry automation',
+    body: 'Information gets captured once, where it first shows up, and lands everywhere it needs to be. No retyping, no copy-paste mistakes.',
+  },
+  {
+    icon: 'document',
+    title: 'Document processing',
+    body: 'Extracting, comparing, and organizing the documents your team works through by hand — quotes, invoices, the paperwork that piles up.',
+  },
+  {
+    icon: 'check-circle',
+    title: 'Verification & summarization tools',
+    body: 'Tools that double-check human work — validation steps that catch errors before they cost money — and tools that summarize long documentation so people can act on it. Where that uses AI, we say so plainly.',
+  },
+] as const;
+
+// Pillar copy verbatim from Brand Guidelines §1.
 const approach = [
   {
     icon: 'gauge',
@@ -68,9 +96,23 @@ const approach = [
         }
       </ul>
 
-      <h2>What we offer</h2>
-      <p class="services-todo">
-        <Todo label="actual services list and packaging — Content-Decisions #1" />
+      <h2>What we build</h2>
+      <ul class="capabilities">
+        {
+          capabilities.map(({ icon, title, body }) => (
+            <li class="capability">
+              <Icon name={icon} feature size={24} />
+              <div>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="capabilities-note">
+        Every engagement is scoped individually — we start with the one bottleneck that's
+        costing you the most, not a package.
       </p>
 
       <div class="services-cta">
@@ -107,9 +149,42 @@ const approach = [
     margin-bottom: var(--space-8);
   }
 
-  .services-body h2 + .approach,
-  .services-body .services-todo {
+  .services-body h2 + .approach {
     margin-bottom: var(--space-16);
+  }
+
+  .capabilities {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: var(--space-8);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .capability {
+    display: flex;
+    gap: var(--space-4);
+    align-items: flex-start;
+  }
+
+  .capability p {
+    margin-top: var(--space-2);
+    color: var(--muted);
+  }
+
+  .capabilities-note {
+    margin-block: var(--space-8) var(--space-16);
+    font-size: var(--text-body-s);
+    line-height: var(--lh-body-s);
+    color: var(--muted);
+    max-width: 38rem;
+  }
+
+  @media (max-width: 767.98px) {
+    .capabilities {
+      grid-template-columns: 1fr;
+    }
   }
 
   .approach {

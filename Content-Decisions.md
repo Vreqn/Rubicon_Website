@@ -4,12 +4,9 @@ Real-world facts and brand forks that aren't the agent's to decide. Each entry: 
 
 ---
 
-## 1. Services list & pricing
+## 1. Services list & pricing — RESOLVED 2026-06-10
 
-- **Issue:** `src/pages/services.astro` is structured around the four brand pillars, but the actual list of offered services (and whether pricing appears at all) is unset. Page ships with `[TODO]` blocks.
-- **Why:** The real service catalogue is a business fact only Krisztian/Attila hold.
-- **Options:** (a) Named service packages; (b) capability areas without packaging; (c) "every engagement is scoped" narrative with no list.
-- **Decision:**
+- **Decision:** Capability areas, no packages, no pricing. Five real areas confirmed by Krisztian, now live on the Services page under "What we build": Automated reporting · Connecting systems · Data entry automation · Document processing · Verification & summarization tools. Closing note states every engagement is scoped individually, starting with one bottleneck.
 
 ## 2. Public contact details
 

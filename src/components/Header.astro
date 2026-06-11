@@ -8,11 +8,11 @@
 import Logo from './Logo.astro';
 
 const nav = [
-  { href: '/about/', label: 'About' },
   { href: '/services/', label: 'Services' },
-  { href: '/work/', label: 'Work' },
-  { href: '/blog/', label: 'Blog' },
+  { href: '/work/', label: 'Case Studies' },
+  { href: '/about/', label: 'About' },
   { href: '/contact/', label: 'Contact' },
+  // Blog hidden for now — pages still build; re-add when ready.
 ];
 
 const current = Astro.url.pathname;
