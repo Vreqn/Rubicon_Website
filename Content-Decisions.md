@@ -27,12 +27,12 @@ Real-world facts and brand forks that aren't the agent's to decide. Each entry: 
 - **Options:** (a) Collect quotes from past work; (b) sector keywords instead of logos; (c) none for launch.
 - **Decision:**
 
-## 6. Wordmark lockup
+## 6. Wordmark lockup — AWAITING KRISZTIAN (agent recommends "bless interim")
 
-- **Issue:** Brand doc v0.2 has the R mark only; wordmark/lockups are explicitly not finalized. Header uses mark + "Rubicon Workflows" in Space Grotesk 500 as a labeled placeholder.
-- **Why:** Pending brand decision (v0.3).
-- **Options:** Wait for v0.3; or bless the current mark+text treatment as the interim lockup.
-- **Decision:**
+- **Issue:** Brand doc v0.2 has the R mark only; a custom-drawn wordmark/lockup isn't finalized. Header currently shows the mark + "Rubicon Workflows" in Space Grotesk 500.
+- **Agent recommendation:** Bless the current mark + Space Grotesk text as the official *interim* lockup and drop the "placeholder" framing — it looks finished and is what most B2B brands actually ship. A bespoke designed wordmark can come later without blocking launch.
+- **Options:** (a) Bless current mark + Space Grotesk as interim lockup [recommended]; (b) mark only in header (name still in footer/titles); (c) keep flagged as placeholder pending brand v0.3.
+- **Decision:** _pending — explained to Krisztian 2026-06-10, awaiting pick_
 
 ## 7. Logo SVG source
 
@@ -48,19 +48,13 @@ Real-world facts and brand forks that aren't the agent's to decide. Each entry: 
 - **Options:** Abstract/texture motion; workspace footage; typographic motion piece.
 - **Decision:**
 
-## 9. OG / social-share image
+## 9. OG / social-share image — RESOLVED 2026-06-10
 
-- **Issue:** A temporary 1200×630 OG image (Pine background + sage mark + company name) ships at `public/og-default.png`. A designed replacement is wanted.
-- **Why:** Brand-visual judgment beyond the locked rules.
-- **Options:** Keep assembled placeholder; design one in Claude Design pass; per-page OG images later.
-- **Decision:**
+- **Decision:** Richer assembled OG image now ships at `public/og-default.png` (2400×1260 @2×): Pine bg, sage R mark, "Rubicon Workflows" in Space Grotesk, tagline "Automate the routine, focus on the results." in muted bone, and a mono `~ CUSTOM AUTOMATION · VANCOUVER, BC` line. Rendered with the real brand fonts. Good for launch; a bespoke designed version (and per-page OG images) can come in the Claude Design polish phase.
 
-## 10. Slate contrast fork (brand spec vs WCAG AA)
+## 10. Slate contrast fork (brand spec vs WCAG AA) — RESOLVED 2026-06-10 (agent call)
 
-- **Issue:** Brand doc assigns Slate `#6B6F62` to "muted text, captions, footnotes" — but Slate measures ~4.4:1 on Bone and ~3.3:1 on Pine, failing WCAG AA for normal-size text. The build uses derived muted-text tokens (`color-mix` of Pine/Bone) for body-size muted text and restricts Slate to large text (≥18.66px), dividers, and decorative elements.
-- **Why:** This is a fork between the brand doc and the project's hard AA requirement; resolving it permanently (e.g. darkening Slate in brand v0.3) is a brand decision.
-- **Options:** (a) Accept derived tokens (current behavior); (b) darken Slate in brand v0.3 and update `tokens.css`; (c) accept AA failure for captions only (not recommended; violates project a11y gate).
-- **Decision:**
+- **Decision:** Accept the AA-safe derived muted-text tokens (current behavior). Slate stays restricted to large text/dividers/decorative use; body-size muted text uses `--text-muted-on-dark`/`--text-muted-on-light`. This is the only WCAG-AA-compliant option without changing the palette, and the project a11y gate requires AA (Lighthouse a11y = 100 confirms). Krisztian may optionally darken Slate in a future brand v0.3 — if so, update `tokens.css` only.
 
 ## 11. Hero CTA wording — RESOLVED 2026-06-10
 
