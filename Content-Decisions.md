@@ -41,12 +41,9 @@ Real-world facts and brand forks that aren't the agent's to decide. Each entry: 
 - **Options:** (a) Accept extracted SVGs (recommended — they are the original path data); (b) re-export from Illustrator if anything looks off.
 - **Decision:**
 
-## 8. Hero video footage
+## 8. Hero video footage — RESOLVED 2026-06-10
 
-- **Issue:** The hero is built video-first with a drop-in contract: place the file at `public/video/hero.mp4` (optional poster at `public/video/hero-poster.jpg`), commit, push — nothing else changes. Until then a static Pine treatment renders. What the footage shows is undecided.
-- **Why:** Krisztian is supplying the asset; subject matter is a brand call.
-- **Options:** Abstract/texture motion; workspace footage; typographic motion piece.
-- **Decision:**
+- **Decision:** Krisztian supplied "Rubicon Website Hero Final.mp4" (1920×1080, 27.4s). Optimized for web: H.264 CRF 28, audio stripped (hero plays muted), faststart → **66.6 MB → 2.39 MB** (729 kbps), shipping at `public/video/hero.mp4` with a 140 KB poster at `public/video/hero-poster.jpg`. Verified playing in-browser (readyState 4, opacity capped 0.5, text AA over the scrim). The 66 MB master lives in `_assets-source/` (gitignored) — re-encode from there if a higher-quality source is ever needed. A WebM variant was tried but came out larger than the MP4, so it was dropped.
 
 ## 9. OG / social-share image — RESOLVED 2026-06-10
 

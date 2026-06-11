@@ -2,6 +2,26 @@ RUBICON WORKFLOWS WEBSITE — RELEASE NOTES
 Running log of changes. Newest entries at top.
 
 =========================================================
+2026-06-10 — Hero video live (Session 1, part 4)
+=========================================================
+- Krisztian's hero video wired in. Source "Rubicon Website Hero
+  Final.mp4" (1920x1080, 27.4s, ~20 Mbps, 66.6 MB) was far too heavy for
+  web. Re-encoded with ffmpeg: H.264 high/yuv420p, CRF 28, preset slow,
+  AUDIO STRIPPED (hero is muted), +faststart, scaled to 1920 wide.
+  Result: 2.39 MB @ 729 kbps — 96% smaller, quality ample behind the
+  50%-opacity scrim. Poster frame (t=2s) at 140 KB.
+- Files: public/video/hero.mp4 + public/video/hero-poster.jpg (matches
+  the HeroVideo drop-in contract; auto-detected at build, no code change).
+- 66 MB master kept at _assets-source/hero-master.mp4 (gitignored). To
+  re-encode: ffmpeg -i _assets-source/hero-master.mp4 -an -c:v libx264
+  -crf 28 -preset slow -movflags +faststart public/video/hero.mp4
+- WebM/VP9 variant tried (CRF 36) but landed LARGER than the H.264
+  (3.07 vs 2.39 MB) — dropped; ship MP4 only (universal support anyway).
+- Verified in-browser via scripts/hero-video-check.mjs: readyState 4,
+  playing, opacity capped at 0.5, text legible over scrim.
+- Content-Decisions #8 RESOLVED.
+
+=========================================================
 2026-06-10 — Content decisions + structure (Session 1, part 3)
 =========================================================
 - Content-Decisions #1 RESOLVED: Services page now lists five real

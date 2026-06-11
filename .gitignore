@@ -24,5 +24,8 @@ Thumbs.db
 # Illustrator source (21 MB — too heavy for git history; SVG exports live in src/assets)
 *.ai
 
+# Heavy source masters (originals kept locally; optimized web assets ship in public/)
+_assets-source/
+
 # logs
 npm-debug.log*
