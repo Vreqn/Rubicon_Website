@@ -3,7 +3,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/Section.astro';
 import Eyebrow from '../components/Eyebrow.astro';
 import ContactForm from '../components/ContactForm.astro';
-import Todo from '../components/Todo.astro';
+
+const email = 'krisztian@rubiconworkflows.ca';
 ---
 
 <BaseLayout
@@ -29,8 +30,8 @@ import Todo from '../components/Todo.astro';
       <ContactForm />
       <aside class="contact-aside">
         <h2 class="contact-aside__title">Other ways to reach us</h2>
-        <p class="contact-aside__mono">@rubiconworkflows</p>
-        <p><Todo label="public contact email (Content-Decisions #2)" /></p>
+        <p><a class="contact-aside__mono" href={`mailto:${email}`}>{email}</a></p>
+        <p class="contact-aside__mono contact-aside__handle">@rubiconworkflows</p>
         <p class="contact-aside__note">Based in Vancouver, BC. We work with businesses across Canada.</p>
       </aside>
     </div>
@@ -69,10 +70,20 @@ import Todo from '../components/Todo.astro';
   }
 
   .contact-aside__mono {
+    display: inline-block;
     margin-top: var(--space-4);
     font-family: var(--font-mono);
     font-size: var(--text-mono-inline);
     color: var(--accent);
+    text-decoration: none;
+  }
+
+  a.contact-aside__mono:hover {
+    text-decoration: underline;
+  }
+
+  .contact-aside__handle {
+    color: var(--muted);
   }
 
   .contact-aside p + p {

@@ -8,26 +8,17 @@ Real-world facts and brand forks that aren't the agent's to decide. Each entry: 
 
 - **Decision:** Capability areas, no packages, no pricing. Five real areas confirmed by Krisztian, now live on the Services page under "What we build": Automated reporting · Connecting systems · Data entry automation · Document processing · Verification & summarization tools. Closing note states every engagement is scoped individually, starting with one bottleneck.
 
-## 2. Public contact details
+## 2. Public contact details — RESOLVED 2026-06-10
 
-- **Issue:** Footer, contact page, and LocalBusiness JSON-LD need a public email (brand convention is `firstname@rubiconworkflows.ca` — which first name?), and optionally phone/address. JSON-LD currently ships with name/locality/URL only.
-- **Why:** Real contact facts; publishing an address/phone is an owner call.
-- **Options:** (a) `krisztian@`; (b) `attila@`; (c) a role address like `hello@`; phone/address: include or omit.
-- **Decision:**
+- **Decision:** Public email = `krisztian@rubiconworkflows.ca`, now live in the footer, contact-page sidebar (as a `mailto:` link), and the LocalBusiness JSON-LD `email` field. No phone or street address for now — structured data stays name + Vancouver locality + URL + email (valid). Revisit address/phone later for stronger local SEO.
 
-## 3. Case studies
+## 3. Case studies — PENDING (Krisztian to supply)
 
-- **Issue:** `src/content/work/` has one all-placeholder template, `draft: true`. The Work section renders an honest empty state. Publishing requires real client facts, metrics, and permission.
-- **Why:** Client names, outcomes, and numbers are real-world facts; inventing them is prohibited.
-- **Options:** (a) Anonymized studies ("a Vancouver roadworks estimator"); (b) named studies with permission; (c) keep empty state until ready.
-- **Decision:**
+- **Decision so far:** Keep the honest empty state for launch ("being written up — ask us about it"). Krisztian will provide one real case study (client descriptor + what was built + verified outcomes) in a later session; I'll draft it from exactly what he gives and set `draft: false` only after his review. Template stays `draft: true`.
 
-## 4. Team bios (About page)
+## 4. Team bios (About page) — PENDING (Krisztian to supply text)
 
-- **Issue:** `/about` has the elevator pitch and positioning from the brand doc, but team names, roles, photos, and history are `[TODO]`.
-- **Why:** Biographical facts.
-- **Options:** (a) Full bios + photos; (b) short joint "who we are" paragraph; (c) no bio section.
-- **Decision:**
+- **Decision:** A short joint "who we are" paragraph (no individual bios/photos). Krisztian will supply the exact wording; I'll shape it to brand voice. The "Who's behind it" section stays with a TODO badge until then.
 
 ## 5. Testimonials / social proof
 
@@ -71,12 +62,9 @@ Real-world facts and brand forks that aren't the agent's to decide. Each entry: 
 - **Options:** (a) Accept derived tokens (current behavior); (b) darken Slate in brand v0.3 and update `tokens.css`; (c) accept AA failure for captions only (not recommended; violates project a11y gate).
 - **Decision:**
 
-## 11. Hero CTA wording
+## 11. Hero CTA wording — RESOLVED 2026-06-10
 
-- **Issue:** Hero CTA currently reads "Start with one bottleneck" (assembled from brand language: "starting with one bottleneck and building from there"), linking to `/contact`.
-- **Why:** Primary conversion copy — operator preference.
-- **Options:** (a) Keep; (b) "Book a consult"; (c) "Tell us what's eating your time".
-- **Decision:**
+- **Decision:** Primary hero CTA now reads "Tell us what's eating your time" (links to `/contact`), matching the contact-page heading. Secondary button stays "How we work" → `/services`.
 
 ## 12. First real blog posts
 

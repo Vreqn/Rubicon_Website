@@ -1,11 +1,9 @@
 ---
 /**
  * Site footer — dark, with the brand-signature tilde flourish.
- * Public contact email is undecided — Content-Decisions.md #2.
  */
-import Todo from './Todo.astro';
-
 const year = new Date().getFullYear();
+const email = 'krisztian@rubiconworkflows.ca';
 
 const nav = [
   { href: '/services/', label: 'Services' },
@@ -36,7 +34,7 @@ const nav = [
 
       <div class="site-footer__contact">
         <p class="site-footer__mono">@rubiconworkflows</p>
-        <p><Todo label="public contact email" /></p>
+        <p><a class="site-footer__email" href={`mailto:${email}`}>{email}</a></p>
       </div>
     </div>
 
@@ -101,6 +99,19 @@ const nav = [
     font-family: var(--font-mono);
     font-size: var(--text-mono-inline);
     color: var(--accent-2);
+  }
+
+  .site-footer__email {
+    display: inline-block;
+    margin-top: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-inline);
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .site-footer__email:hover {
+    color: var(--fg);
   }
 
   .site-footer__legal {
