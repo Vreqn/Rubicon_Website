@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/Section.astro';
+import SectionHeader from '../../components/SectionHeader.astro';
+import PostCard from '../../components/PostCard.astro';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<BaseLayout
+  title="Rubicon Workflows | Blog — Automation, Explained Plainly"
+  description="Plain-language writing on workflow automation for owner-led businesses: what it is, what it isn't, and where to start. From a Vancouver consultancy."
+  surface="light"
+>
+  <Section surface="light">
+    <SectionHeader
+      as="h1"
+      eyebrow="Blog"
+      title="Automation, explained plainly"
+      lede="We're a teaching brand. These posts explain what automation can and can't do for an owner-led business — no jargon, no pressure."
+    />
+    {
+      posts.length > 0 ? (
+        <div class="post-list">
+          {posts.map((post) => (
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              href={`/blog/${post.id}/`}
+            />
+          ))}
+        </div>
+      ) : (
+        <p>First posts are on the way.</p>
+      )
+    }
+  </Section>
+</BaseLayout>

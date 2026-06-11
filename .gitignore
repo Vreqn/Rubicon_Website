@@ -1,0 +1,28 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# environment — secrets live in Vercel env vars, never the repo
+.env
+.env.*
+
+# vercel
+.vercel/
+
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Word lock files
+~$*
+
+# Illustrator source (21 MB — too heavy for git history; SVG exports live in src/assets)
+*.ai
+
+# logs
+npm-debug.log*

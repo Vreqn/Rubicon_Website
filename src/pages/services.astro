@@ -1,0 +1,152 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import Icon from '../components/Icon.astro';
+import Button from '../components/Button.astro';
+import Todo from '../components/Todo.astro';
+
+// Pillar copy verbatim from Brand Guidelines §1. The actual services list
+// is a real-world fact — Content-Decisions #1.
+const approach = [
+  {
+    icon: 'gauge',
+    title: 'Operational efficiency',
+    body: 'Smoother operations, real cost savings.',
+  },
+  {
+    icon: 'shield-check',
+    title: 'Error reduction',
+    body: 'Fewer mistakes through code-based consistency or human-in-the-loop validation.',
+  },
+  {
+    icon: 'steps',
+    title: 'Incremental and embedded',
+    body: 'We work within your existing infrastructure, starting with one step and compounding wins from there. No rip-and-replace, no platform lock-in.',
+  },
+  {
+    icon: 'user-plus',
+    title: 'Augmentation, not replacement',
+    body: 'We automate the tedious parts so people can focus on the work they actually care about.',
+  },
+] as const;
+---
+
+<BaseLayout
+  title="Rubicon Workflows | Automation Services for Vancouver Businesses"
+  description="Custom workflow automation built inside the systems you already use — starting with one bottleneck. Plain-language services from a Vancouver consultancy."
+  surface="light"
+>
+  <!-- Dark intro -->
+  <Section surface="dark">
+    <header class="services-hero">
+      <Eyebrow>Services</Eyebrow>
+      <h1 class="services-hero__title">We automate the parts that eat your team's time.</h1>
+      <p class="services-hero__lede">
+        Weekly reports, data entry, the back-and-forth between systems that don't talk to
+        each other. We find the bottleneck, automate that one step inside the tools you
+        already use, and build from there.
+      </p>
+    </header>
+  </Section>
+
+  <!-- Light body -->
+  <Section surface="light">
+    <div class="services-body">
+      <h2>How we approach every engagement</h2>
+      <ul class="approach">
+        {
+          approach.map(({ icon, title, body }) => (
+            <li class="approach__item">
+              <Icon name={icon} feature size={24} />
+              <div>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+
+      <h2>What we offer</h2>
+      <p class="services-todo">
+        <Todo label="actual services list and packaging — Content-Decisions #1" />
+      </p>
+
+      <div class="services-cta">
+        <p>
+          Not sure whether your bottleneck is automatable? That's a normal place to start —
+          most of our conversations begin there.
+        </p>
+        <Button variant="primary" href="/contact/">Tell us what's eating your time</Button>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .services-hero {
+    max-width: 46rem;
+  }
+
+  .services-hero__title {
+    margin-top: var(--space-3);
+    font-size: var(--text-display-l);
+    line-height: var(--lh-display-l);
+    letter-spacing: var(--track-display-l);
+  }
+
+  .services-hero__lede {
+    margin-top: var(--space-6);
+    font-size: var(--text-body-l);
+    line-height: var(--lh-body-l);
+    color: var(--muted);
+  }
+
+  .services-body h2 {
+    margin-bottom: var(--space-8);
+  }
+
+  .services-body h2 + .approach,
+  .services-body .services-todo {
+    margin-bottom: var(--space-16);
+  }
+
+  .approach {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: var(--space-8);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .approach__item {
+    display: flex;
+    gap: var(--space-4);
+    align-items: flex-start;
+  }
+
+  .approach__item p {
+    margin-top: var(--space-2);
+    color: var(--muted);
+  }
+
+  .services-cta {
+    border-top: 1px solid var(--line);
+    padding-top: var(--space-12);
+    max-width: 38rem;
+  }
+
+  .services-cta p {
+    margin-bottom: var(--space-6);
+    font-size: var(--text-body-l);
+    line-height: var(--lh-body-l);
+  }
+
+  @media (max-width: 767.98px) {
+    .approach {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

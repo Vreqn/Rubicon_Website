@@ -1,0 +1,299 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroVideo from '../components/HeroVideo.astro';
+import DisplayIndex from '../components/DisplayIndex.astro';
+import PillarsTicker from '../components/PillarsTicker.astro';
+import Button from '../components/Button.astro';
+import Section from '../components/Section.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import Icon from '../components/Icon.astro';
+import CaseStudyCard from '../components/CaseStudyCard.astro';
+import PostCard from '../components/PostCard.astro';
+
+const caseStudies = (await getCollection('work', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+// The four pillars — copy verbatim from Brand Guidelines §1.
+const pillars = [
+  {
+    icon: 'gauge',
+    title: 'Operational efficiency',
+    body: 'Smoother operations, real cost savings.',
+  },
+  {
+    icon: 'shield-check',
+    title: 'Error reduction',
+    body: 'Fewer mistakes through code-based consistency or human-in-the-loop validation.',
+  },
+  {
+    icon: 'steps',
+    title: 'Incremental and embedded',
+    body: 'We work within your existing infrastructure, starting with one step and compounding wins from there. No rip-and-replace, no platform lock-in.',
+  },
+  {
+    icon: 'user-plus',
+    title: 'Augmentation, not replacement',
+    body: 'We automate the tedious parts so people can focus on the work they actually care about.',
+  },
+] as const;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': 'https://rubiconworkflows.ca/#org',
+  name: 'Rubicon Workflows',
+  description:
+    'Custom workflow automation for small and mid-sized businesses. Vancouver, BC.',
+  url: 'https://rubiconworkflows.ca/',
+  logo: 'https://rubiconworkflows.ca/favicon-32.png',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Vancouver',
+    addressRegion: 'BC',
+    addressCountry: 'CA',
+  },
+  areaServed: 'Vancouver, BC',
+  knowsAbout: ['workflow automation', 'business process automation', 'systems integration'],
+};
+---
+
+<BaseLayout
+  title="Rubicon Workflows | Custom Automation for Vancouver Businesses"
+  description="We find the parts of your operation that are eating your team's time and automate them — inside the systems you already use. Vancouver, BC."
+  surface="dark"
+  jsonLd={jsonLd}
+>
+  <!-- Hero — dark, full-screen, video-first (Brand: first impression, high impact) -->
+  <section data-surface="dark" class="hero">
+    <HeroVideo />
+    <div class="hero__content container">
+      <DisplayIndex
+        as="h1"
+        tier="xl"
+        items={['Automate the routine.', 'Focus on the results.']}
+      />
+      <p class="hero__sub">
+        We find the parts of your operation that are eating your team's time, and we automate
+        them — increasing accuracy and freeing people up for the work that actually matters,
+        without replacing your systems or overhauling how you work.
+      </p>
+      <div class="hero__actions">
+        <Button variant="primary" href="/contact/">Start with one bottleneck</Button>
+        <Button variant="secondary" href="/services/">How we work</Button>
+      </div>
+    </div>
+    <div class="hero__ticker container">
+      <PillarsTicker />
+    </div>
+  </section>
+
+  <!-- Four pillars — dark -->
+  <Section surface="dark" id="pillars">
+    <SectionHeader
+      eyebrow="What we optimize for"
+      title="Everything we build comes back to four ideas"
+    />
+    <ul class="pillars">
+      {
+        pillars.map(({ icon, title, body }) => (
+          <li class="pillar">
+            <Icon name={icon} feature size={26} />
+            <h3 class="pillar__title">{title}</h3>
+            <p class="pillar__body">{body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <!-- Our work — dark ("case study cards on a moody canvas") -->
+  <Section surface="dark" id="work">
+    <SectionHeader
+      eyebrow="Our work"
+      title="Real bottlenecks, solved one step at a time"
+    />
+    {
+      caseStudies.length > 0 ? (
+        <ul class="work-grid">
+          {caseStudies.map((cs) => (
+            <li>
+              <CaseStudyCard
+                title={cs.data.title}
+                description={cs.data.description}
+                sector={cs.data.sector}
+                href={`/work/${cs.id}/`}
+              />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div class="work-empty">
+          <p>
+            Case studies are being written up. In the meantime, we're happy to walk you through
+            the work directly — <a href="/contact/">ask us about it</a>.
+          </p>
+        </div>
+      )
+    }
+  </Section>
+
+  <!-- Blog teaser — light (reading surface) -->
+  <Section surface="light" id="writing">
+    <SectionHeader
+      eyebrow="From the blog"
+      title="How we think about automation"
+      lede="We're a teaching brand: plain-language writing on what automation is, what it isn't, and where to start."
+    />
+    {
+      posts.length > 0 && (
+        <div class="post-list">
+          {posts.map((post) => (
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              href={`/blog/${post.id}/`}
+            />
+          ))}
+        </div>
+      )
+    }
+    <p class="more-link">
+      <a href="/blog/">All posts &rarr;</a>
+    </p>
+  </Section>
+
+  <!-- Forest CTA band — the one signature-surface moment on this page -->
+  <Section surface="forest" id="cta">
+    <div class="cta-band">
+      <h2 class="cta-band__title">
+        Once you cross the Rubicon on a workflow, you don't go back.
+      </h2>
+      <p class="cta-band__body">
+        Tell us about the task that's eating your team's hours. We'll tell you, plainly,
+        whether it's worth automating.
+      </p>
+      <Button variant="primary" href="/contact/">Get in touch</Button>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  /* ---- Hero ---- */
+  .hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100svh - 4.5rem); /* viewport minus header */
+    overflow: hidden;
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: var(--space-16);
+  }
+
+  .hero__sub {
+    margin-top: var(--space-6);
+    max-width: 38rem;
+    font-size: var(--text-body-l);
+    line-height: var(--lh-body-l);
+    color: var(--muted);
+  }
+
+  .hero__actions {
+    margin-top: var(--space-8);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .hero__ticker {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ---- Pillars ---- */
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--space-8);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .pillar__title {
+    margin-top: var(--space-4);
+  }
+
+  .pillar__body {
+    margin-top: var(--space-2);
+    color: var(--muted);
+  }
+
+  /* ---- Work ---- */
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: var(--space-6);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .work-empty {
+    border: 1px dashed var(--line);
+    border-radius: var(--radius-lg);
+    padding: var(--space-8);
+    max-width: 38rem;
+  }
+
+  .work-empty a {
+    color: var(--accent);
+  }
+
+  /* ---- Blog teaser ---- */
+  .more-link {
+    margin-top: var(--space-8);
+  }
+
+  .more-link a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .more-link a:hover {
+    text-decoration: underline;
+  }
+
+  /* ---- Forest CTA band ---- */
+  .cta-band {
+    max-width: 44rem;
+  }
+
+  .cta-band__title {
+    font-size: var(--text-display-l);
+    line-height: var(--lh-display-l);
+    letter-spacing: var(--track-display-l);
+  }
+
+  .cta-band__body {
+    margin-block: var(--space-6);
+    font-size: var(--text-body-l);
+    line-height: var(--lh-body-l);
+    color: var(--muted);
+  }
+</style>

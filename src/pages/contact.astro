@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import ContactForm from '../components/ContactForm.astro';
+import Todo from '../components/Todo.astro';
+---
+
+<BaseLayout
+  title="Rubicon Workflows | Contact — Automation Help in Vancouver"
+  description="Tell us about the task that's eating your team's hours. Plain answers from a Vancouver automation consultancy — no pressure, no jargon."
+  surface="light"
+>
+  <!-- Dark intro strip -->
+  <Section surface="dark">
+    <header class="contact-hero">
+      <Eyebrow>Contact</Eyebrow>
+      <h1 class="contact-hero__title">Tell us what's eating your team's time.</h1>
+      <p class="contact-hero__lede">
+        Describe the task in your own words — no technical detail needed. We'll tell you,
+        plainly, whether it's worth automating and what starting small would look like.
+      </p>
+    </header>
+  </Section>
+
+  <!-- Light form section (functional task = readable surface) -->
+  <Section surface="light">
+    <div class="contact-grid">
+      <ContactForm />
+      <aside class="contact-aside">
+        <h2 class="contact-aside__title">Other ways to reach us</h2>
+        <p class="contact-aside__mono">@rubiconworkflows</p>
+        <p><Todo label="public contact email (Content-Decisions #2)" /></p>
+        <p class="contact-aside__note">Based in Vancouver, BC. We work with businesses across Canada.</p>
+      </aside>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .contact-hero {
+    max-width: 46rem;
+  }
+
+  .contact-hero__title {
+    margin-top: var(--space-3);
+    font-size: var(--text-display-l);
+    line-height: var(--lh-display-l);
+    letter-spacing: var(--track-display-l);
+  }
+
+  .contact-hero__lede {
+    margin-top: var(--space-6);
+    font-size: var(--text-body-l);
+    line-height: var(--lh-body-l);
+    color: var(--muted);
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 34rem) minmax(14rem, 1fr);
+    gap: var(--space-16);
+    align-items: start;
+  }
+
+  .contact-aside__title {
+    font-size: var(--text-h3);
+    line-height: var(--lh-h3);
+  }
+
+  .contact-aside__mono {
+    margin-top: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-inline);
+    color: var(--accent);
+  }
+
+  .contact-aside p + p {
+    margin-top: var(--space-3);
+  }
+
+  .contact-aside__note {
+    color: var(--muted);
+    font-size: var(--text-body-s);
+    line-height: var(--lh-body-s);
+  }
+
+  @media (max-width: 767.98px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-12);
+    }
+  }
+</style>

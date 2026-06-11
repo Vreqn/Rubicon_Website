@@ -1,0 +1,116 @@
+---
+/**
+ * Case-study detail shell — light surface (people are reading).
+ * The outcomes block renders ONLY when real metrics exist in frontmatter;
+ * outcomes are never invented (see Content-Decisions.md #3).
+ */
+import BaseLayout from './BaseLayout.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  sector: string;
+  clientLabel?: string;
+  outcomes?: { label: string; value: string }[];
+}
+
+const { title, description, sector, clientLabel, outcomes = [] } = Astro.props;
+const sectorLabel = sector.replace(/-/g, ' ');
+---
+
+<BaseLayout
+  title={`Rubicon Workflows | ${title}`}
+  description={description}
+  surface="light"
+  ogType="article"
+>
+  <article class="cs">
+    <div class="container">
+      <header class="cs__header">
+        <Eyebrow>Case study &middot; {sectorLabel}</Eyebrow>
+        <h1 class="cs__title">{title}</h1>
+        {clientLabel && <p class="cs__client">{clientLabel}</p>}
+      </header>
+
+      {outcomes.length > 0 && (
+        <dl class="cs__outcomes">
+          {outcomes.map(({ label, value }) => (
+            <div class="cs__outcome">
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+
+      <div class="prose">
+        <slot />
+      </div>
+
+      <p class="cs__back">
+        <a href="/work/">&larr; All work</a>
+      </p>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .cs {
+    padding-block: var(--section-pad);
+  }
+
+  .cs__header {
+    max-width: var(--container-prose);
+    margin-bottom: var(--space-12);
+  }
+
+  .cs__title {
+    margin-top: var(--space-3);
+  }
+
+  .cs__client {
+    margin-top: var(--space-3);
+    color: var(--muted);
+  }
+
+  .cs__outcomes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-8);
+    margin: 0 0 var(--space-12);
+    padding: var(--space-6);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    max-width: var(--container-prose);
+  }
+
+  .cs__outcome dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    line-height: var(--lh-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .cs__outcome dd {
+    margin: var(--space-1) 0 0;
+    font-size: var(--text-h2);
+    line-height: var(--lh-h2);
+    font-weight: 500;
+  }
+
+  .cs__back {
+    margin-top: var(--space-16);
+  }
+
+  .cs__back a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .cs__back a:hover {
+    text-decoration: underline;
+  }
+</style>

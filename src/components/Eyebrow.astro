@@ -1,0 +1,27 @@
+---
+/**
+ * Mono kicker label above sections, e.g. "~ OUR APPROACH".
+ * Color is var(--accent): Sage on dark (brand spec), Forest on light —
+ * Sage-on-Bone is ~2.5:1 and may not be used for readable text (AA).
+ */
+interface Props {
+  tilde?: boolean;
+  class?: string;
+}
+
+const { tilde = true, class: className } = Astro.props;
+---
+
+<span class:list={['eyebrow', className]}>{tilde && <span aria-hidden="true">~&nbsp;</span>}<slot /></span>
+
+<style>
+  .eyebrow {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    line-height: var(--lh-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    text-transform: uppercase;
+    color: var(--accent, var(--sage));
+  }
+</style>

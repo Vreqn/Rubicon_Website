@@ -1,0 +1,180 @@
+/* ==========================================================================
+   RUBICON WORKFLOWS — DESIGN TOKENS
+   Single source of truth for every color, type size, and spacing value.
+   A raw hex value or font name anywhere else in the codebase is a bug.
+   Brand reference: Rubicon_Workflows_Brand_Guidelines_V0_2.pdf
+   ========================================================================== */
+
+:root {
+  /* --------------------------------------------------------------------
+     1. Raw palette — the six brand colors. The ONLY hex values in the repo.
+     Colors are not interchangeable; each has one job.
+     -------------------------------------------------------------------- */
+  --forest: #2E4B3C; /* hero brand color; primary accent on light; signature surface */
+  --sage:   #7DA371; /* accent on dark; eyebrows, icons, mono accents */
+  --pine:   #1A1D1B; /* dark surface bg; primary text on light */
+  --slate:  #6B6F62; /* large muted text, dividers, decorative ONLY — fails AA at body size, see Content-Decisions #10 */
+  --honey:  #B89B6E; /* small accent; mono details on dark; NEVER a primary CTA */
+  --bone:   #F0EEE7; /* light surface bg; light text on dark */
+
+  /* --------------------------------------------------------------------
+     2. Derived colors
+     -------------------------------------------------------------------- */
+  --sage-tint-13: rgba(125, 163, 113, 0.13);                 /* icon feature-container fill (brand spec) */
+  --text-muted-on-dark:  color-mix(in srgb, var(--bone) 72%, var(--pine));  /* AA-safe muted body text on Pine */
+  --text-muted-on-light: color-mix(in srgb, var(--pine) 75%, var(--bone));  /* AA-safe muted body text on Bone */
+  --line-on-dark:  color-mix(in srgb, var(--bone) 18%, transparent);
+  --line-on-light: color-mix(in srgb, var(--pine) 15%, transparent);
+  --scrim-pine: color-mix(in srgb, var(--pine) 60%, transparent); /* hero video legibility scrim */
+
+  /* --------------------------------------------------------------------
+     3. Typography
+     Tiers per brand hierarchy. Display tiers use clamp() so desktop hits
+     the exact spec while mobile stays sane (brand doc defines no mobile
+     scale — see ReleaseNotes 2026-06-10).
+     -------------------------------------------------------------------- */
+  --font-sans: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Display XL — 56/60, -0.025em (website hero) */
+  --text-display-xl: clamp(2.25rem, 1.4rem + 4.2vw, 3.5rem);
+  --lh-display-xl: 1.07;
+  --track-display-xl: -0.025em;
+
+  /* Display L — 40/46, -0.02em (section openers) */
+  --text-display-l: clamp(1.875rem, 1.3rem + 2.6vw, 2.5rem);
+  --lh-display-l: 1.15;
+  --track-display-l: -0.02em;
+
+  /* H1 — 32/38, -0.015em (page titles) */
+  --text-h1: clamp(1.75rem, 1.5rem + 1.2vw, 2rem);
+  --lh-h1: 1.19;
+  --track-h1: -0.015em;
+
+  /* H2 — 24/30, -0.01em (major section breaks) */
+  --text-h2: 1.5rem;
+  --lh-h2: 1.25;
+  --track-h2: -0.01em;
+
+  /* H3 — 18/26, -0.005em (sub-sections) */
+  --text-h3: 1.125rem;
+  --lh-h3: 1.444;
+  --track-h3: -0.005em;
+
+  /* Body L — 18/30 (marketing copy) */
+  --text-body-l: 1.125rem;
+  --lh-body-l: 1.667;
+
+  /* Body M — 16/26 (default body) */
+  --text-body-m: 1rem;
+  --lh-body-m: 1.625;
+
+  /* Body S — 14/22 (secondary info) */
+  --text-body-s: 0.875rem;
+  --lh-body-s: 1.571;
+
+  /* Eyebrow — 11/16 JB Mono uppercase, 0.1em tracking */
+  --text-eyebrow: 0.6875rem;
+  --lh-eyebrow: 1.455;
+  --track-eyebrow: 0.1em;
+
+  /* Inline mono — 13/22 */
+  --text-mono-inline: 0.8125rem;
+  --lh-mono-inline: 1.692;
+
+  /* Caption — 12/18 */
+  --text-caption: 0.75rem;
+  --lh-caption: 1.5;
+
+  /* Hanging mono index: marker ~30% of display size, ~64px outdent */
+  --index-marker-scale: 0.3em;
+  --index-outdent: 4rem;
+
+  /* --------------------------------------------------------------------
+     4. Spacing — 4px base scale
+     -------------------------------------------------------------------- */
+  --space-1: 0.25rem;  /*   4px */
+  --space-2: 0.5rem;   /*   8px */
+  --space-3: 0.75rem;  /*  12px */
+  --space-4: 1rem;     /*  16px */
+  --space-6: 1.5rem;   /*  24px */
+  --space-8: 2rem;     /*  32px */
+  --space-12: 3rem;    /*  48px */
+  --space-16: 4rem;    /*  64px */
+  --space-24: 6rem;    /*  96px */
+  --space-32: 8rem;    /* 128px */
+  --section-pad: clamp(4rem, 10vw, 7.5rem);
+
+  /* --------------------------------------------------------------------
+     5. Layout
+     Breakpoints (custom properties can't drive media queries — keep in
+     sync by hand): mobile 375px · tablet 768px · desktop 1280px
+     -------------------------------------------------------------------- */
+  --container-max: 72rem;    /* 1152px — general content */
+  --container-prose: 42rem;  /*  672px — long-form reading on light pages */
+  --container-pad: clamp(1.25rem, 5vw, 2.5rem);
+
+  /* --------------------------------------------------------------------
+     6. Radii
+     -------------------------------------------------------------------- */
+  --radius-sm: 6px;
+  --radius-md: 10px;   /* matches brand icon-container spec */
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  /* --------------------------------------------------------------------
+     7. Motion, focus, stacking
+     -------------------------------------------------------------------- */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-fade: 500ms; /* hero video fade in/out */
+  --z-header: 10;
+  --z-skip: 100;
+}
+
+/* ==========================================================================
+   8. SURFACE SYSTEM
+   Components never reference palette colors directly — they consume the
+   role tokens below, which each surface sets. This structurally enforces
+   "Sage leads on dark, Forest leads on light."
+   Usage: <section data-surface="dark|light|forest">
+   ========================================================================== */
+
+[data-surface="dark"] {
+  --bg: var(--pine);
+  --fg: var(--bone);
+  --accent: var(--sage);
+  --accent-2: var(--honey);
+  --muted: var(--text-muted-on-dark);
+  --line: var(--line-on-dark);
+  --cta-bg: var(--sage);
+  --cta-fg: var(--pine);
+}
+
+[data-surface="light"] {
+  --bg: var(--bone);
+  --fg: var(--pine);
+  --accent: var(--forest);
+  --accent-2: var(--slate);
+  --muted: var(--text-muted-on-light);
+  --line: var(--line-on-light);
+  --cta-bg: var(--forest);
+  --cta-fg: var(--bone);
+}
+
+[data-surface="forest"] {
+  --bg: var(--forest);
+  --fg: var(--bone);
+  --accent: var(--sage);
+  --accent-2: var(--honey);
+  --muted: color-mix(in srgb, var(--bone) 80%, var(--forest));
+  --line: color-mix(in srgb, var(--bone) 22%, transparent);
+  --cta-bg: var(--bone);
+  --cta-fg: var(--forest);
+}
+
+[data-surface] {
+  background-color: var(--bg);
+  color: var(--fg);
+}

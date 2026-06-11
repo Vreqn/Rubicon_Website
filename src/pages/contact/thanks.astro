@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/Section.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import Button from '../../components/Button.astro';
+---
+
+<BaseLayout
+  title="Rubicon Workflows | Message Received"
+  description="Thanks for reaching out to Rubicon Workflows. We'll get back to you soon."
+  surface="dark"
+  noindex
+>
+  <Section surface="dark">
+    <div class="thanks">
+      <Eyebrow>Message received</Eyebrow>
+      <h1 class="thanks__title">Got it — thanks.</h1>
+      <p class="thanks__body">
+        We read every message and reply personally. You'll hear back from us soon, usually
+        within a couple of business days.
+      </p>
+      <Button variant="secondary" href="/">Back to the homepage</Button>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .thanks {
+    max-width: 38rem;
+  }
+
+  .thanks__title {
+    margin-top: var(--space-3);
+  }
+
+  .thanks__body {
+    margin-block: var(--space-4) var(--space-8);
+    color: var(--muted);
+  }
+</style>

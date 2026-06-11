@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import Button from '../components/Button.astro';
+---
+
+<BaseLayout
+  title="Rubicon Workflows | Page Not Found"
+  description="That page doesn't exist. Head back to the Rubicon Workflows homepage."
+  surface="dark"
+  noindex
+>
+  <Section surface="dark">
+    <div class="nf">
+      <p class="nf__code" aria-hidden="true">~ 404</p>
+      <h1 class="nf__title">This page doesn't exist.</h1>
+      <p class="nf__body">
+        The link may be old, or the page may have moved. Nothing here is automated away —
+        it just isn't here.
+      </p>
+      <Button variant="secondary" href="/">Back to the homepage</Button>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .nf {
+    max-width: 38rem;
+  }
+
+  .nf__code {
+    font-family: var(--font-mono);
+    font-size: var(--text-h2);
+    color: var(--accent);
+  }
+
+  .nf__title {
+    margin-top: var(--space-4);
+  }
+
+  .nf__body {
+    margin-block: var(--space-4) var(--space-8);
+    color: var(--muted);
+  }
+</style>

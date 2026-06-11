@@ -1,0 +1,104 @@
+---
+/**
+ * Contact form — native POST to Formspree, zero JS.
+ * Endpoint comes from PUBLIC_FORMSPREE_ENDPOINT (Vercel env / local .env).
+ * Until the endpoint exists the form renders DISABLED with a visible TODO —
+ * it must not pretend to work (Content-Decisions.md #14).
+ */
+import Button from './Button.astro';
+import Todo from './Todo.astro';
+
+const endpoint = import.meta.env.PUBLIC_FORMSPREE_ENDPOINT as string | undefined;
+const live = Boolean(endpoint);
+---
+
+<form
+  class="contact-form"
+  method="POST"
+  action={live ? endpoint : '#'}
+  aria-describedby={live ? undefined : 'form-status'}
+>
+  {
+    !live && (
+      <p id="form-status" class="contact-form__notice">
+        <Todo label="form endpoint not configured — submissions disabled" />
+      </p>
+    )
+  }
+
+  <div class="contact-form__field">
+    <label for="cf-name">Name</label>
+    <input id="cf-name" name="name" type="text" autocomplete="name" required />
+  </div>
+
+  <div class="contact-form__field">
+    <label for="cf-email">Email</label>
+    <input id="cf-email" name="email" type="email" autocomplete="email" required />
+  </div>
+
+  <div class="contact-form__field">
+    <label for="cf-company">Company <span class="contact-form__optional">(optional)</span></label>
+    <input id="cf-company" name="company" type="text" autocomplete="organization" />
+  </div>
+
+  <div class="contact-form__field">
+    <label for="cf-message">What's eating your team's time?</label>
+    <textarea id="cf-message" name="message" rows="6" required></textarea>
+  </div>
+
+  <!-- Formspree plumbing: spam honeypot + subject + redirect -->
+  <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="visually-hidden" aria-hidden="true" />
+  <input type="hidden" name="_subject" value="Website inquiry — rubiconworkflows.ca" />
+  <input type="hidden" name="_next" value="https://rubiconworkflows.ca/contact/thanks/" />
+
+  <Button variant="primary" type="submit" disabled={!live}>Send it over</Button>
+</form>
+
+<style>
+  .contact-form {
+    max-width: 34rem;
+  }
+
+  .contact-form__notice {
+    margin-bottom: var(--space-6);
+  }
+
+  .contact-form__field {
+    margin-bottom: var(--space-6);
+  }
+
+  .contact-form__field label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: var(--space-2);
+  }
+
+  .contact-form__optional {
+    font-weight: 400;
+    color: var(--muted);
+    font-size: var(--text-body-s);
+  }
+
+  .contact-form__field input,
+  .contact-form__field textarea {
+    width: 100%;
+    font: inherit;
+    color: var(--fg);
+    background-color: color-mix(in srgb, var(--fg) 4%, transparent);
+    border: 1px solid color-mix(in srgb, var(--fg) 25%, transparent);
+    border-radius: var(--radius-sm);
+    padding: var(--space-3) var(--space-4);
+    transition: border-color var(--dur-fast) var(--ease);
+  }
+
+  .contact-form__field input:focus-visible,
+  .contact-form__field textarea:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    border-color: var(--accent);
+  }
+
+  .contact-form__field textarea {
+    resize: vertical;
+  }
+</style>

@@ -1,0 +1,87 @@
+---
+/**
+ * The brand-signature "hanging mono index" display pattern:
+ *   01 / Automate the routine.
+ *   02 / Focus on the results.
+ * Markers: JetBrains Mono, Sage, ~30% of display size, hanging ~64px in the
+ * left margin. Markers are decorative (aria-hidden). Below 768px the outdent
+ * collapses and markers sit above each line so nothing collides at 375px.
+ */
+interface Props {
+  items: string[];
+  tier?: 'xl' | 'l';
+  /** Heading element to render. The whole index is ONE heading. */
+  as?: 'h1' | 'h2' | 'p';
+  class?: string;
+}
+
+const { items, tier = 'xl', as: Tag = 'h1', class: className }: Props = Astro.props;
+---
+
+<Tag class:list={['display-index', `display-index--${tier}`, className]}>
+  {items.map((line, i) => (
+    <span class="line">
+      <span class="marker" aria-hidden="true">{String(i + 1).padStart(2, '0')} /</span>
+      {line}
+    </span>
+  ))}
+</Tag>
+
+<style>
+  .display-index {
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .display-index--xl {
+    font-size: var(--text-display-xl);
+    line-height: var(--lh-display-xl);
+    letter-spacing: var(--track-display-xl);
+  }
+
+  .display-index--l {
+    font-size: var(--text-display-l);
+    line-height: var(--lh-display-l);
+    letter-spacing: var(--track-display-l);
+  }
+
+  .line {
+    display: block;
+    position: relative;
+  }
+
+  .marker {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: var(--index-marker-scale);
+    letter-spacing: 0;
+    color: var(--sage);
+    line-height: inherit;
+  }
+
+  @media (min-width: 768px) {
+    .display-index {
+      /* Reserve the outdent so the markers can hang without leaving the container */
+      padding-left: var(--index-outdent);
+    }
+
+    .marker {
+      position: absolute;
+      left: calc(-1 * var(--index-outdent));
+      top: 0;
+      /* Optically align marker baseline with the display line */
+      transform: translateY(0.55em);
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .marker {
+      display: block;
+      margin-bottom: var(--space-1);
+    }
+
+    .line + .line {
+      margin-top: var(--space-3);
+    }
+  }
+</style>

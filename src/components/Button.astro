@@ -1,0 +1,78 @@
+---
+/**
+ * Brand button. Colors come from surface role tokens:
+ * primary = Sage bg / Pine text on dark, Forest bg / Bone text on light.
+ * Honey structurally cannot become a CTA (no token path leads there).
+ */
+interface Props {
+  variant?: 'primary' | 'secondary';
+  href?: string;
+  type?: 'button' | 'submit';
+  disabled?: boolean;
+  class?: string;
+}
+
+const {
+  variant = 'primary',
+  href,
+  type = 'button',
+  disabled = false,
+  class: className,
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+  class:list={['btn', `btn--${variant}`, className]}
+  href={href}
+  type={href ? undefined : type}
+  disabled={href ? undefined : disabled || undefined}
+>
+  <slot />
+</Tag>
+
+<style>
+  .btn {
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-size: var(--text-body-m);
+    line-height: 1;
+    font-weight: 500;
+    padding: var(--space-4) var(--space-6);
+    border-radius: var(--radius-full);
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+      background-color var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease);
+  }
+
+  .btn--primary {
+    background-color: var(--cta-bg);
+    color: var(--cta-fg);
+  }
+
+  .btn--primary:hover {
+    background-color: color-mix(in srgb, var(--cta-bg) 88%, var(--fg));
+    color: var(--cta-fg);
+  }
+
+  .btn--secondary {
+    background-color: transparent;
+    color: var(--fg);
+    border-color: color-mix(in srgb, var(--fg) 40%, transparent);
+  }
+
+  .btn--secondary:hover {
+    border-color: var(--fg);
+    color: var(--fg);
+  }
+
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+</style>

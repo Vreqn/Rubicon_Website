@@ -1,0 +1,25 @@
+---
+/**
+ * Page section with an explicit brand surface. The unit of the site's
+ * dark/light rhythm (~60-70% dark overall — check the page-level mix).
+ */
+interface Props {
+  surface: 'dark' | 'light' | 'forest';
+  id?: string;
+  /** Set false for full-bleed children (e.g. tickers); default wraps a container. */
+  container?: boolean;
+  class?: string;
+}
+
+const { surface, id, container = true, class: className } = Astro.props;
+---
+
+<section data-surface={surface} id={id} class:list={['section', className]}>
+  {container ? <div class="container"><slot /></div> : <slot />}
+</section>
+
+<style>
+  .section {
+    padding-block: var(--section-pad);
+  }
+</style>

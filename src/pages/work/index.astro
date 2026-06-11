@@ -1,0 +1,72 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/Section.astro';
+import SectionHeader from '../../components/SectionHeader.astro';
+import CaseStudyCard from '../../components/CaseStudyCard.astro';
+
+const caseStudies = (await getCollection('work', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<BaseLayout
+  title="Rubicon Workflows | Our Work — Automation Case Studies"
+  description="Case studies from real automation projects for small and mid-sized businesses — real bottlenecks, solved one step at a time. Vancouver, BC."
+  surface="dark"
+>
+  <Section surface="dark">
+    <SectionHeader
+      as="h1"
+      eyebrow="Our work"
+      title="Real bottlenecks, solved one step at a time"
+      lede="Every project starts with one workflow that's eating a team's hours. Here's what that looks like in practice."
+    />
+    {
+      caseStudies.length > 0 ? (
+        <ul class="work-grid">
+          {caseStudies.map((cs) => (
+            <li>
+              <CaseStudyCard
+                title={cs.data.title}
+                description={cs.data.description}
+                sector={cs.data.sector}
+                href={`/work/${cs.id}/`}
+              />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div class="work-empty">
+          <p>
+            Case studies are being written up — we publish them only with real, verified
+            outcomes, so they take a little longer. In the meantime, we're happy to walk you
+            through the work directly: <a href="/contact/">ask us about it</a>.
+          </p>
+        </div>
+      )
+    }
+  </Section>
+</BaseLayout>
+
+<style>
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: var(--space-6);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .work-empty {
+    border: 1px dashed var(--line);
+    border-radius: var(--radius-lg);
+    padding: var(--space-8);
+    max-width: 38rem;
+  }
+
+  .work-empty a {
+    color: var(--accent);
+  }
+</style>

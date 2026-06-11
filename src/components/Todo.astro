@@ -1,0 +1,28 @@
+---
+/**
+ * Visible placeholder badge for content that must come from Krisztian.
+ * Every usage must have a matching entry in Content-Decisions.md.
+ * Deliberately unmissable in review — better an obvious TODO than a
+ * plausible fabrication that ships.
+ */
+interface Props {
+  label: string;
+}
+
+const { label } = Astro.props;
+---
+
+<span class="todo-badge">[TODO: {label}]</span>
+
+<style>
+  .todo-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-inline);
+    line-height: var(--lh-mono-inline);
+    color: var(--muted);
+    border: 1px dashed var(--accent-2);
+    border-radius: var(--radius-sm);
+    padding: 0 var(--space-2);
+  }
+</style>

@@ -1,0 +1,26 @@
+---
+import { getCollection, render } from 'astro:content';
+import CaseStudyLayout from '../../layouts/CaseStudyLayout.astro';
+
+export async function getStaticPaths() {
+  // Drafts are routable in dev (to preview the layout) but never in production.
+  const studies = await getCollection('work', ({ data }) => import.meta.env.DEV || !data.draft);
+  return studies.map((cs) => ({
+    params: { slug: cs.id },
+    props: { cs },
+  }));
+}
+
+const { cs } = Astro.props;
+const { Content } = await render(cs);
+---
+
+<CaseStudyLayout
+  title={cs.data.title}
+  description={cs.data.description}
+  sector={cs.data.sector}
+  clientLabel={cs.data.clientLabel}
+  outcomes={cs.data.outcomes}
+>
+  <Content />
+</CaseStudyLayout>

@@ -1,0 +1,34 @@
+RUBICON WORKFLOWS WEBSITE — RELEASE NOTES
+Running log of changes. Newest entries at top.
+
+=========================================================
+2026-06-10 — Initial scaffold (Session 1)
+=========================================================
+- Greenfield scaffold created manually (no `npm create astro` — the wizard
+  targets Astro 6 templates and prompts on non-empty directories).
+- Astro pinned to ^5.18.2, deliberately NOT v6: Astro 6 removed support for
+  the `src/content/config.ts` location that project CLAUDE.md mandates.
+  v5 supports that path plus the modern Content Layer API (glob loaders).
+  The v6 upgrade later = move file to `src/content.config.ts` + amend
+  CLAUDE.md. The v5 deprecation notice about the config location is known
+  and accepted — do not "fix" it without amending CLAUDE.md first.
+- Packages: astro ^5.18.2, @astrojs/sitemap ^3.7.3,
+  @fontsource/space-grotesk ^5.2.10 (400/500),
+  @fontsource/jetbrains-mono ^5.2.8 (400);
+  dev: @astrojs/check ^0.9.9, typescript.
+- .gitignore excludes the 21 MB Rubicon_Logo.ai (too heavy for git history;
+  SVG exports in src/assets are the in-repo logo source) and Word lock
+  files (~$*). Brand guidelines PDF IS committed as the in-repo brand
+  reference.
+- Content-Decisions.md seeded with 14 open entries (services, contact
+  details, case studies, bios, testimonials, wordmark, logo SVGs, hero
+  video, OG image, Slate contrast fork, hero CTA wording, blog posts,
+  analytics, Formspree).
+- Build note: display type tiers get clamp() floors for mobile — desktop
+  values stay exactly on brand spec; the clamp floor is a build necessity
+  (brand doc defines no mobile scale), not a brand fork.
+- Contrast pre-computation (encode in reviews): Pine/Bone ~14.6:1,
+  Forest-on-Bone ~8.3:1, Sage-on-Pine ~5.9:1, Honey-on-Pine ~6.4:1 (all
+  pass); Sage-on-Bone ~2.5:1, Honey-on-Bone ~2.3:1 (decorative only);
+  Slate FAILS AA normal text on both surfaces (~4.4:1 Bone / ~3.3:1 Pine)
+  → derived muted-text tokens used instead; see Content-Decisions #10.

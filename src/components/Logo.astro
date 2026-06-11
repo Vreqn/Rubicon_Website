@@ -1,0 +1,34 @@
+---
+/**
+ * The Rubicon Workflows "R" mark, inlined from the extracted SVG.
+ * Color follows the surface: var(--accent) = Forest on light, Sage on dark —
+ * exactly the brand's colorway rule. Min size 16px per brand doc.
+ */
+import markSvg from '../assets/logo-mark.svg?raw';
+
+interface Props {
+  /** Height in px (width scales with the mark's aspect ratio). Min 16. */
+  size?: number;
+  class?: string;
+}
+
+const { size = 32, class: className } = Astro.props;
+---
+
+<span
+  class:list={['logo-mark', className]}
+  style={`--logo-size: ${Math.max(size, 16)}px`}
+  set:html={markSvg}
+/>
+
+<style>
+  .logo-mark {
+    display: inline-flex;
+    color: var(--accent, var(--sage));
+  }
+
+  .logo-mark :global(svg) {
+    height: var(--logo-size);
+    width: auto;
+  }
+</style>
