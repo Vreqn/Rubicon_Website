@@ -1,226 +1,210 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Section from '../components/Section.astro';
-import Eyebrow from '../components/Eyebrow.astro';
-import Icon from '../components/Icon.astro';
-import Button from '../components/Button.astro';
+import PageHero from '../components/PageHero.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import EngageTimeline from '../components/EngageTimeline.astro';
+import BgVideo from '../components/BgVideo.astro';
+import CtaBand from '../components/CtaBand.astro';
 
-// Capability areas confirmed by Krisztian 2026-06-10 (Content-Decisions #1,
-// resolved): no packages, no pricing — plain-language areas of work.
-const capabilities = [
+// Six engagements per the 2026-06 design comp. NOTE: this list supersedes
+// the five capability areas resolved in Content-Decisions #1 — reopened
+// there for Krisztian's re-confirmation.
+const services = [
   {
+    num: '01',
+    icon: 'search',
+    title: 'Workflow audit',
+    body: 'We sit with your team and map where the hours actually go — the reports, the re-keying, the copy-paste between systems nobody owns. You leave knowing exactly what’s worth automating, and in what order.',
+    deliverable: 'a ranked automation roadmap',
+  },
+  {
+    num: '02',
+    icon: 'refresh',
+    title: 'Process automation',
+    body: 'The core build. We automate a specific manual task inside the tools you already pay for — no new platform, no rip-and-replace. It runs quietly in the background and your team stops touching it.',
+    deliverable: 'one task, running itself',
+  },
+  {
+    num: '03',
     icon: 'chart',
-    title: 'Automated reporting',
-    body: 'The weekly report that eats someone’s morning builds and sends itself — same numbers, same format, on time, every time.',
+    title: 'Reporting & data pipelines',
+    body: 'The numbers someone rebuilds by hand every week — we make them assemble themselves. Pulled from the source, reconciled, and delivered on schedule, accurate the same way every time.',
+    deliverable: 'reports that build themselves',
   },
   {
+    num: '04',
     icon: 'nodes',
-    title: 'Connecting systems',
-    body: 'When two tools don’t talk, somebody becomes the messenger. We build the connection so data moves on its own, accurately, in both directions.',
+    title: 'System integration',
+    body: 'The two tools that should share data but don’t. We connect them so information flows on its own — no exports, no re-entry, no version that’s three days stale by the time anyone reads it.',
+    deliverable: 'one source of truth',
   },
   {
+    num: '05',
     icon: 'intake',
-    title: 'Data entry automation',
-    body: 'Information gets captured once, where it first shows up, and lands everywhere it needs to be. No retyping, no copy-paste mistakes.',
+    title: 'Document & inbox handling',
+    body: 'The intake that piles up — forms, invoices, requests. We sort, route, and capture it the moment it arrives, so nothing waits in a queue for a person to file it by hand.',
+    deliverable: 'intake that files itself',
   },
   {
-    icon: 'document',
-    title: 'Document processing',
-    body: 'Extracting, comparing, and organizing the documents your team works through by hand — quotes, invoices, the paperwork that piles up.',
-  },
-  {
-    icon: 'check-circle',
-    title: 'Verification & summarization tools',
-    body: 'Tools that double-check human work — validation steps that catch errors before they cost money — and tools that summarize long documentation so people can act on it. Where that uses AI, we say so plainly.',
-  },
-] as const;
-
-// Pillar copy verbatim from Brand Guidelines §1.
-const approach = [
-  {
-    icon: 'gauge',
-    title: 'Operational efficiency',
-    body: 'Smoother operations, real cost savings.',
-  },
-  {
+    num: '06',
     icon: 'shield-check',
-    title: 'Error reduction',
-    body: 'Fewer mistakes through code-based consistency or human-in-the-loop validation.',
-  },
-  {
-    icon: 'steps',
-    title: 'Incremental and embedded',
-    body: 'We work within your existing infrastructure, starting with one step and compounding wins from there. No rip-and-replace, no platform lock-in.',
-  },
-  {
-    icon: 'user-plus',
-    title: 'Augmentation, not replacement',
-    body: 'We automate the tedious parts so people can focus on the work they actually care about.',
+    title: 'Care & maintenance',
+    body: 'We don’t ship and vanish. Every automation we build comes with monitoring and tuning — when your process changes, it changes with it, and you hear from us before something drifts.',
+    deliverable: 'monitoring that flags drift',
   },
 ] as const;
 ---
 
 <BaseLayout
   title="Rubicon Workflows | Automation Services for Vancouver Businesses"
-  description="Custom workflow automation built inside the systems you already use — starting with one bottleneck. Plain-language services from a Vancouver consultancy."
-  surface="light"
+  description="Workflow audits, process automation, reporting pipelines, system integration, document handling, and care — one bottleneck at a time. Vancouver, BC."
+  surface="dark"
+  headerOverlay
 >
-  <!-- Dark intro -->
-  <Section surface="dark">
-    <header class="services-hero">
-      <Eyebrow>Services</Eyebrow>
-      <h1 class="services-hero__title">We automate the parts that eat your team's time.</h1>
-      <p class="services-hero__lede">
-        Weekly reports, data entry, the back-and-forth between systems that don't talk to
-        each other. We find the bottleneck, automate that one step inside the tools you
-        already use, and build from there.
-      </p>
-    </header>
-  </Section>
+  <PageHero
+    title="The work we take off your team’s plate."
+    lede="Every engagement does the same thing in the end — it removes manual work and hands the hours back. Below is where we usually start, and how a project runs once we do."
+    meta={['Six engagements', 'one bottleneck at a time']}
+    videoSrc="/video/services-hero.mp4"
+    poster="/video/services-hero-poster.jpg"
+    maxOpacity={0.9}
+    fit="frame"
+  />
 
-  <!-- Light body -->
-  <Section surface="light">
-    <div class="services-body">
-      <h2>How we approach every engagement</h2>
-      <ul class="approach">
-        {
-          approach.map(({ icon, title, body }) => (
-            <li class="approach__item">
-              <Icon name={icon} feature size={24} />
-              <div>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </div>
-            </li>
-          ))
-        }
-      </ul>
-
-      <h2>What we build</h2>
-      <ul class="capabilities">
-        {
-          capabilities.map(({ icon, title, body }) => (
-            <li class="capability">
-              <Icon name={icon} feature size={24} />
-              <div>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </div>
-            </li>
-          ))
-        }
-      </ul>
-      <p class="capabilities-note">
-        Every engagement is scoped individually — we start with the one bottleneck that's
-        costing you the most, not a package.
-      </p>
-
-      <div class="services-cta">
-        <p>
-          Not sure whether your bottleneck is automatable? That's a normal place to start —
-          most of our conversations begin there.
+  <section data-surface="dark" class="section services" id="services">
+    <div class="container">
+      <div class="shead" data-reveal>
+        <h2>Six ways we give the hours back.</h2>
+        <p class="shead__lede">
+          Not a menu to pick from blind &mdash; most engagements start with the first and grow
+          into the rest. Each one removes a specific kind of manual work and leaves something
+          concrete behind.
         </p>
-        <Button variant="primary" href="/contact/">Tell us what's eating your time</Button>
+      </div>
+
+      <div class="svc-grid">
+        {
+          services.map((s, i) => (
+            <ServiceCard
+              num={s.num}
+              icon={s.icon}
+              title={s.title}
+              body={s.body}
+              deliverable={s.deliverable}
+              revealDelay={i * 70}
+            />
+          ))
+        }
       </div>
     </div>
-  </Section>
+  </section>
+
+  <!-- Engagement model — quiet light-particle footage behind the timeline -->
+  <section data-surface="dark" class="section engage">
+    <BgVideo src="/video/engage.mp4" maxOpacity={0.35} lazy class="engage-video" />
+    <div class="engage-scrim" aria-hidden="true"></div>
+    <div class="container engage-inner">
+      <div class="shead" data-reveal>
+        <h2>Start small. Prove it. Grow from there.</h2>
+        <p class="shead__lede">
+          No long contract before you&rsquo;ve seen it work. We prove the hours saved on one
+          automation, then expand at the pace that suits you.
+        </p>
+      </div>
+      <EngageTimeline />
+    </div>
+  </section>
+
+  <CtaBand
+    id="cta"
+    title="Tell us which task you’d automate first."
+    lede="Book the scoping call. We’ll point to the one worth starting with — no pitch, no commitment."
+    ctaLabel="Book a scoping call"
+    ctaHref="/contact/"
+  />
 </BaseLayout>
 
 <style>
-  .services-hero {
-    max-width: 46rem;
+  .section {
+    position: relative;
+    padding-block: var(--section-pad);
   }
 
-  .services-hero__title {
-    margin-top: var(--space-3);
-    font-size: var(--text-display-l);
-    line-height: var(--lh-display-l);
-    letter-spacing: var(--track-display-l);
-  }
-
-  .services-hero__lede {
-    margin-top: var(--space-6);
-    font-size: var(--text-body-l);
-    line-height: var(--lh-body-l);
-    color: var(--muted);
-  }
-
-  .services-body h2 {
-    margin-bottom: var(--space-8);
-  }
-
-  .services-body h2 + .approach {
+  .shead {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    max-width: 40rem;
     margin-bottom: var(--space-16);
   }
 
-  .capabilities {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-    gap: var(--space-8);
-    list-style: none;
+  .shead h2 {
     margin: 0;
-    padding: 0;
+    font-weight: 500;
+    font-size: var(--text-display-l);
+    line-height: var(--lh-display-l);
+    letter-spacing: var(--track-display-l);
+    color: var(--fg);
+    text-wrap: balance;
   }
 
-  .capability {
-    display: flex;
-    gap: var(--space-4);
-    align-items: flex-start;
-  }
-
-  .capability p {
-    margin-top: var(--space-2);
+  .shead__lede {
+    margin: 0;
+    font-size: var(--text-body-l);
+    line-height: var(--lh-body-l);
     color: var(--muted);
+    text-wrap: pretty;
   }
 
-  .capabilities-note {
-    margin-block: var(--space-8) var(--space-16);
-    font-size: var(--text-body-s);
-    line-height: var(--lh-body-s);
-    color: var(--muted);
-    max-width: 38rem;
+  .svc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
   }
 
-  @media (max-width: 767.98px) {
-    .capabilities {
-      grid-template-columns: 1fr;
+  /* ---- Engagement section: footage feathered on all edges, Pine scrim ---- */
+  .engage {
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .engage :global(.engage-video) {
+    -webkit-mask-image:
+      linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%),
+      linear-gradient(90deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%),
+      linear-gradient(90deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+    mask-composite: intersect;
+  }
+
+  .engage-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(
+      120% 80% at 50% 38%,
+      color-mix(in srgb, var(--bg) 52%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 12%, transparent) 52%,
+      transparent 78%
+    );
+  }
+
+  .engage-inner {
+    position: relative;
+    z-index: 2;
+  }
+
+  @media (max-width: 1024px) {
+    .svc-grid {
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
-  .approach {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-    gap: var(--space-8);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .approach__item {
-    display: flex;
-    gap: var(--space-4);
-    align-items: flex-start;
-  }
-
-  .approach__item p {
-    margin-top: var(--space-2);
-    color: var(--muted);
-  }
-
-  .services-cta {
-    border-top: 1px solid var(--line);
-    padding-top: var(--space-12);
-    max-width: 38rem;
-  }
-
-  .services-cta p {
-    margin-bottom: var(--space-6);
-    font-size: var(--text-body-l);
-    line-height: var(--lh-body-l);
-  }
-
-  @media (max-width: 767.98px) {
-    .approach {
+  @media (max-width: 768px) {
+    .svc-grid {
       grid-template-columns: 1fr;
     }
   }

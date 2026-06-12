@@ -1,0 +1,132 @@
+---
+/**
+ * Service engagement card (2026-06 design port) — bordered 3-up grid card
+ * with the brand feature icon, mono number, body, and the mono "deliverable"
+ * foot: the tangible thing the engagement hands back. Sage perimeter glow
+ * on hover.
+ */
+import Icon from './Icon.astro';
+import type { ComponentProps } from 'astro/types';
+
+interface Props {
+  num: string;
+  icon: ComponentProps<typeof Icon>['name'];
+  title: string;
+  body: string;
+  deliverable: string;
+  revealDelay?: number;
+}
+
+const { num, icon, title, body, deliverable, revealDelay } = Astro.props;
+---
+
+<article
+  class="svc"
+  data-reveal
+  style={revealDelay ? `--reveal-delay: ${revealDelay}ms` : undefined}
+>
+  <div class="svc__head">
+    <span class="svc__ico"><Icon name={icon} size={26} /></span>
+    <span class="svc__num">{num}</span>
+  </div>
+  <h3>{title}</h3>
+  <p>{body}</p>
+  <span class="svc__foot"><span class="arrow" aria-hidden="true">&#8627;</span> {deliverable}</span>
+</article>
+
+<style>
+  .svc {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    min-height: 290px;
+    padding: var(--space-8);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--bone) 3%, transparent);
+    box-shadow: 0 0 0 0 transparent;
+    transition:
+      border-color var(--dur-base) var(--ease),
+      background-color var(--dur-base) var(--ease),
+      box-shadow var(--dur-base) var(--ease),
+      transform var(--dur-base) var(--ease);
+  }
+
+  .svc:hover {
+    border-color: color-mix(in srgb, var(--accent) 70%, var(--line));
+    /* perimeter glow — tight ring hugging the border + a soft outer bloom */
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent),
+      0 0 18px -2px color-mix(in srgb, var(--accent) 45%, transparent),
+      0 0 38px -6px color-mix(in srgb, var(--accent) 30%, transparent);
+    background: color-mix(in srgb, var(--bone) 5%, transparent);
+    transform: translateY(-3px);
+  }
+
+  .svc__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .svc__ico {
+    flex: 0 0 auto;
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-md);
+    background: var(--sage-tint-13);
+    color: var(--accent);
+  }
+
+  .svc__num {
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    color: var(--accent-2);
+  }
+
+  .svc h3 {
+    margin: 0;
+    font-size: var(--text-h2);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--track-h2);
+    font-weight: 500;
+    color: var(--fg);
+  }
+
+  .svc p {
+    margin: 0;
+    font-size: var(--text-body-m);
+    line-height: var(--lh-body-m);
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  /* deliverable — the tangible thing the engagement hands back */
+  .svc__foot {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin-top: auto;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-inline);
+    line-height: var(--lh-mono-inline);
+    letter-spacing: 0.01em;
+    color: var(--accent-text);
+  }
+
+  .svc__foot .arrow {
+    color: var(--accent);
+  }
+
+  @media (max-width: 768px) {
+    .svc {
+      min-height: 0;
+    }
+  }
+</style>

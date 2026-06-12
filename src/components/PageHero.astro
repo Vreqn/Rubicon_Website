@@ -163,7 +163,10 @@ const {
     font-family: var(--font-mono);
     font-size: var(--text-mono-inline);
     letter-spacing: 0.02em;
-    color: var(--accent-2);
+    /* Comp used honey (--accent-2) here, but honey at 13px over moving
+       footage repeatedly fails 4.5:1 on worst frames; muted has the AA
+       headroom. Honey stays for mono details on STATIC dark surfaces. */
+    color: var(--muted);
   }
 
   .pagehero__meta .sep {

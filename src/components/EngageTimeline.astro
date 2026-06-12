@@ -1,0 +1,350 @@
+---
+/**
+ * Engagement model — a living pipeline (2026-06 design port). A dim base
+ * rail; a sage signal draws across on scroll-into-view, igniting each node
+ * as the front passes; then a comet loops the rail so work visibly keeps
+ * flowing. Fails open: reduced motion / hidden tab commits the lit end-state
+ * instantly (CSS owns the static look).
+ */
+const phases = [
+  {
+    num: '01',
+    title: 'Scoping call',
+    body: 'One conversation. We point to the single task worth automating first — no pitch, no commitment.',
+    time: 'Start here',
+    ignite: 250,
+  },
+  {
+    num: '02',
+    title: 'Pilot build',
+    body: 'We build that one automation end to end and prove the hours it saves against your real cases.',
+    time: 'Prove it',
+    ignite: 700,
+  },
+  {
+    num: '03',
+    title: 'Rollout',
+    body: 'We move to the next bottleneck — one at a time, so the work keeps running the whole way through.',
+    time: 'Expand',
+    ignite: 1150,
+  },
+  {
+    num: '04',
+    title: 'Care',
+    body: 'Ongoing monitoring and tuning, so every automation keeps fitting as your process shifts.',
+    time: 'Sustain',
+    ignite: 1600,
+  },
+] as const;
+---
+
+<div class="engage-grid" data-engage>
+  <div class="engage-rail" aria-hidden="true">
+    <span class="rail-base"></span>
+    <span class="rail-fill"></span>
+    <span class="rail-pulse"></span>
+  </div>
+
+  {
+    phases.map(({ num, title, body, time, ignite }, i) => (
+      <article
+        class="phase"
+        data-reveal
+        style={`--reveal-delay: ${i * 90}ms; --ignite-delay: ${ignite}ms`}
+      >
+        <span class="phase__num">{num}</span>
+        <div class="phase__body">
+          <h3>{title}</h3>
+          <p>{body}</p>
+        </div>
+        <span class="phase__time">{time}</span>
+      </article>
+    ))
+  }
+</div>
+
+<script>
+  const grid = document.querySelector<HTMLElement>('[data-engage]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (grid) {
+    const activate = () => grid.classList.add('is-active');
+
+    if (reduce || document.visibilityState !== 'visible') {
+      activate();
+    } else if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              activate();
+              io.disconnect();
+            }
+          });
+        },
+        { threshold: 0.35 }
+      );
+      io.observe(grid);
+    } else {
+      activate();
+    }
+  }
+</script>
+
+<style>
+  .engage-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-8);
+  }
+
+  /* rail: base line + animated fill + comet. Nodes are centered in their
+     columns; anchor the rail node-01-center → node-04-center. */
+  .engage-rail {
+    display: block;
+    position: absolute;
+    top: 24px;
+    left: calc((100% - 3 * var(--space-8)) / 8);
+    right: calc((100% - 3 * var(--space-8)) / 8);
+    height: 2px;
+    z-index: 0;
+  }
+
+  .rail-base {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-full);
+    background: var(--line);
+  }
+
+  /* the bright sage signal — width animates 0→100% on activation, with a
+     flowing sheen so the filled length itself reads as moving data */
+  .rail-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    border-radius: var(--radius-full);
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--accent) 35%, transparent),
+      color-mix(in srgb, var(--accent) 95%, transparent),
+      color-mix(in srgb, var(--accent) 35%, transparent)
+    );
+    background-size: 220% 100%;
+    box-shadow: 0 0 12px -1px color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+
+  .engage-grid.is-active .rail-fill {
+    animation:
+      rail-fill 1.5s var(--ease) 0.15s forwards,
+      rail-flow 2.4s linear 0.15s infinite;
+  }
+
+  /* the comet — travels the rail on a loop once the signal has landed */
+  .rail-pulse {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 9px;
+    height: 9px;
+    border-radius: var(--radius-full);
+    background: var(--bone);
+    box-shadow:
+      0 0 10px 2px color-mix(in srgb, var(--accent) 90%, transparent),
+      0 0 20px 5px color-mix(in srgb, var(--accent) 45%, transparent);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+  }
+
+  .rail-pulse::before {
+    content: '';
+    position: absolute;
+    right: 50%;
+    top: 50%;
+    width: 70px;
+    height: 2px;
+    transform: translateY(-50%);
+    border-radius: var(--radius-full);
+    background: linear-gradient(
+      270deg,
+      color-mix(in srgb, var(--accent) 85%, transparent),
+      transparent
+    );
+  }
+
+  .engage-grid.is-active .rail-pulse {
+    animation: pulse-travel 6s cubic-bezier(0.45, 0, 0.55, 1) 1.5s infinite;
+  }
+
+  .phase {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-4);
+  }
+
+  .phase__num {
+    position: relative;
+    z-index: 1;
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-full);
+    /* opaque tinted node so the rail doesn't show through */
+    background: color-mix(in srgb, var(--sage) 16%, var(--pine));
+    border: 1px solid color-mix(in srgb, var(--accent) 34%, transparent);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: var(--text-body-s);
+  }
+
+  /* nodes ignite in sequence as the signal front reaches them, then settle
+     into a slow breathing glow so the pipeline stays alive */
+  .engage-grid.is-active .phase__num {
+    animation:
+      node-ignite 0.7s var(--ease) var(--ignite-delay, 0ms) both,
+      node-breathe 3.2s ease-in-out calc(var(--ignite-delay, 0ms) + 0.7s) infinite;
+  }
+
+  .phase h3 {
+    margin: 0;
+    font-size: var(--text-h3);
+    line-height: var(--lh-h3);
+    letter-spacing: var(--track-h3);
+    font-weight: 500;
+    color: var(--fg);
+  }
+
+  .phase p {
+    margin: 0;
+    font-size: var(--text-body-m);
+    line-height: var(--lh-body-m);
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  .phase__time {
+    margin-top: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+    white-space: nowrap;
+  }
+
+  @keyframes rail-fill {
+    to {
+      width: 100%;
+    }
+  }
+
+  @keyframes rail-flow {
+    to {
+      background-position: -220% 0;
+    }
+  }
+
+  @keyframes pulse-travel {
+    /* Hold the comet invisible until its 70px tail clears node 01 — so it
+       emerges from behind the node instead of poking out left of it. */
+    0% {
+      left: 0;
+      opacity: 0;
+    }
+    12% {
+      opacity: 0;
+    }
+    17% {
+      opacity: 1;
+    }
+    94% {
+      opacity: 1;
+    }
+    100% {
+      left: 100%;
+      opacity: 0;
+    }
+  }
+
+  @keyframes node-ignite {
+    0% {
+      transform: scale(0.78);
+      opacity: 0.35;
+      border-color: color-mix(in srgb, var(--accent) 20%, transparent);
+      box-shadow: 0 0 0 0 transparent;
+    }
+    55% {
+      transform: scale(1.16);
+      opacity: 1;
+      border-color: color-mix(in srgb, var(--accent) 80%, transparent);
+      box-shadow:
+        0 0 26px 0 color-mix(in srgb, var(--accent) 60%, transparent),
+        0 0 0 7px color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+      border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+      box-shadow:
+        0 0 18px -4px color-mix(in srgb, var(--accent) 48%, transparent),
+        0 0 0 1px color-mix(in srgb, var(--accent) 34%, transparent);
+    }
+  }
+
+  @keyframes node-breathe {
+    0%,
+    100% {
+      box-shadow:
+        0 0 16px -4px color-mix(in srgb, var(--accent) 42%, transparent),
+        0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent);
+    }
+    50% {
+      box-shadow:
+        0 0 26px -2px color-mix(in srgb, var(--accent) 62%, transparent),
+        0 0 0 2px color-mix(in srgb, var(--accent) 42%, transparent);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .engage-grid {
+      grid-template-columns: repeat(2, 1fr);
+      row-gap: var(--space-12);
+    }
+    .engage-rail {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .engage-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Reduced motion — commit the lit end-state, no travel/breathe/flow. */
+  @media (prefers-reduced-motion: reduce) {
+    .rail-fill {
+      width: 100%;
+      animation: none;
+      background-position: 0 0;
+    }
+    .rail-pulse {
+      display: none;
+    }
+    .engage-grid.is-active .phase__num,
+    .phase__num {
+      animation: none;
+      border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+      box-shadow:
+        0 0 18px -4px color-mix(in srgb, var(--accent) 48%, transparent),
+        0 0 0 1px color-mix(in srgb, var(--accent) 34%, transparent);
+    }
+  }
+</style>
