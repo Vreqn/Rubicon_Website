@@ -27,5 +27,9 @@ Thumbs.db
 # Heavy source masters (originals kept locally; optimized web assets ship in public/)
 _assets-source/
 
+# Design-drop staging — drop zips/files here; sorted output gets committed, the raw drop does not
+docs/design/inbox/*
+!docs/design/inbox/README.md
+
 # logs
 npm-debug.log*

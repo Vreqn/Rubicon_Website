@@ -48,6 +48,7 @@ Secrets (form endpoint, analytics) live in Vercel environment variables — neve
 - **Hero video:** lives at `public/video/hero.mp4` (+ poster `hero-poster.jpg`) and the hero auto-detects it at build time. To swap in a new cut, drop the file there, commit, push — nothing else changes. **Compress before committing** (a hero background should be ~2–5 MB): `ffmpeg -i <new>.mp4 -an -c:v libx264 -crf 28 -preset slow -movflags +faststart public/video/hero.mp4`. Heavy source masters go in `_assets-source/` (gitignored), not the repo.
 - **Logo SVGs:** five colorways (forest, pine, sage, bone, honey) live at `src/assets/logo-*.svg`, plus `public/favicon.svg` and PNG fallbacks. Extracted from `Rubicon_Logo.ai` (kept out of git — 21 MB).
 - **Contact form:** set `PUBLIC_FORMSPREE_ENDPOINT` in Vercel (and a local `.env` for testing). The form renders disabled with a TODO badge until the endpoint exists.
+- **Design drops:** drop a whole zip from Claude Design (or another project) into `docs/design/inbox/` and tell Claude to "process the inbox". It extracts, proposes a file-by-file mapping (flagging anything brand- or content-sensitive), places everything properly, then clears the staging area. The inbox is git-ignored except its `README.md`. See [`docs/design/inbox/README.md`](docs/design/inbox/README.md).
 
 ## Helper scripts (`scripts/`)
 
