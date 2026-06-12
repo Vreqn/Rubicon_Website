@@ -1,42 +1,18 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import HeroVideo from '../components/HeroVideo.astro';
-import DisplayIndex from '../components/DisplayIndex.astro';
+import BgVideo from '../components/BgVideo.astro';
 import PillarsTicker from '../components/PillarsTicker.astro';
-import Button from '../components/Button.astro';
-import Section from '../components/Section.astro';
-import SectionHeader from '../components/SectionHeader.astro';
-import Icon from '../components/Icon.astro';
-import CaseStudyCard from '../components/CaseStudyCard.astro';
+import PillarFlow from '../components/PillarFlow.astro';
+import StudyCard from '../components/StudyCard.astro';
+import CtaBand from '../components/CtaBand.astro';
+// LogoMarquee is BUILT but not rendered — no real client logos exist yet
+// (Content-Decisions #5). When logos land: import it and swap it into the
+// post-hero strip below in place of PillarsTicker.
 
 const caseStudies = (await getCollection('work', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
-
-// The four pillars — copy verbatim from Brand Guidelines §1.
-const pillars = [
-  {
-    icon: 'gauge',
-    title: 'Operational efficiency',
-    body: 'Smoother operations, real cost savings.',
-  },
-  {
-    icon: 'shield-check',
-    title: 'Error reduction',
-    body: 'Fewer mistakes through code-based consistency or human-in-the-loop validation.',
-  },
-  {
-    icon: 'steps',
-    title: 'Incremental and embedded',
-    body: 'We work within your existing infrastructure, starting with one step and compounding wins from there. No rip-and-replace, no platform lock-in.',
-  },
-  {
-    icon: 'user-plus',
-    title: 'Augmentation, not replacement',
-    body: 'We automate the tedious parts so people can focus on the work they actually care about.',
-  },
-] as const;
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -63,192 +39,303 @@ const jsonLd = {
   title="Rubicon Workflows | Custom Automation for Vancouver Businesses"
   description="We find the parts of your operation that are eating your team's time and automate them — inside the systems you already use. Vancouver, BC."
   surface="dark"
+  headerOverlay
   jsonLd={jsonLd}
 >
-  <!-- Hero — dark, full-screen, video-first (Brand: first impression, high impact) -->
+  <!-- Hero — full-viewport footage, immersive scrim, centered copy hanging
+       high in the "sky" of the frame. The scrim carries AA at data-max 1. -->
   <section data-surface="dark" class="hero">
-    <HeroVideo />
-    <div class="hero__content container">
-      <DisplayIndex
-        as="h1"
-        tier="xl"
-        items={['Automate the routine.', 'Focus on the results.']}
-      />
-      <p class="hero__sub">
-        We find the parts of your operation that are eating your team's time, and we automate
-        them — increasing accuracy and freeing people up for the work that actually matters,
-        without replacing your systems or overhauling how you work.
-      </p>
-      <div class="hero__actions">
-        <Button variant="primary" href="/contact/">Tell us what's eating your time</Button>
-        <Button variant="secondary" href="/services/">How we work</Button>
+    <BgVideo src="/video/hero.mp4" poster="/video/hero-poster.jpg" maxOpacity={1} />
+    <div class="hero__scrim" aria-hidden="true"></div>
+    <div class="hero__inner">
+      <div class="hero__copy">
+        <h1 class="hero__tagline">
+          <span>Automate the routine.</span>
+          <span class="l2">Focus on the results.</span>
+        </h1>
+        <p class="hero__lede">
+          We find the parts of your operation that are eating your team&rsquo;s time, and we
+          automate them &mdash; increasing accuracy and freeing people up for the work that
+          actually matters, without replacing your systems or overhauling how you work.
+        </p>
       </div>
     </div>
-    <div class="hero__ticker container">
+  </section>
+
+  <!-- Post-hero strip — seamless Pine continuation. PillarsTicker stays live
+       until real client logos exist, then LogoMarquee takes this slot. -->
+  <section data-surface="dark" class="ticker-section">
+    <div class="container">
       <PillarsTicker />
     </div>
   </section>
 
-  <!-- Four pillars — dark -->
-  <Section surface="dark" id="pillars">
-    <SectionHeader
-      eyebrow="What we optimize for"
-      title="Everything we build comes back to four ideas"
-    />
-    <ul class="pillars">
-      {
-        pillars.map(({ icon, title, body }) => (
-          <li class="pillar">
-            <Icon name={icon} feature size={26} />
-            <h3 class="pillar__title">{title}</h3>
-            <p class="pillar__body">{body}</p>
-          </li>
-        ))
-      }
-    </ul>
-  </Section>
+  <!-- Four-pillar pipeline — "one bottleneck at a time" -->
+  <section data-surface="dark" class="section pillars" id="services">
+    <div class="container">
+      <div class="shead" data-reveal>
+        <h2>We automate one bottleneck at a time.</h2>
+        <p class="shead__lede">
+          No big-bang transformation. We find the highest-friction task, automate it cleanly,
+          and move to the next &mdash; so the work keeps running the whole way through.
+        </p>
+      </div>
+      <PillarFlow />
+    </div>
+  </section>
 
-  <!-- Case studies — dark ("case study cards on a moody canvas") -->
-  <Section surface="dark" id="work">
-    <SectionHeader
-      eyebrow="Case studies"
-      title="Real bottlenecks, solved one step at a time"
-    />
-    {
-      caseStudies.length > 0 ? (
-        <ul class="work-grid">
-          {caseStudies.map((cs) => (
-            <li>
-              <CaseStudyCard
-                title={cs.data.title}
-                description={cs.data.description}
-                sector={cs.data.sector}
-                href={`/work/${cs.id}/`}
-              />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <div class="work-empty">
-          <p>
-            Case studies are being written up. In the meantime, we're happy to walk you through
-            the work directly — <a href="/contact/">ask us about it</a>.
-          </p>
-        </div>
-      )
-    }
-  </Section>
+  <!-- Selected work — ambient glow footage under a Pine scrim -->
+  <section data-surface="dark" class="section work" id="work">
+    <BgVideo src="/video/glow.mp4" maxOpacity={1} lazy class="work__video" />
+    <div class="work__scrim" aria-hidden="true"></div>
+    <div class="container work__inner">
+      <div class="shead" data-reveal>
+        <h2>Proof, not promises.</h2>
+      </div>
+      <div class="studies" data-tilt-grid>
+        {
+          caseStudies.map((cs, i) => (
+            <StudyCard
+              title={cs.data.title}
+              summary={cs.data.summary}
+              sector={cs.data.sector}
+              metric={cs.data.metric}
+              tint={cs.data.tint}
+              href={`/work/${cs.id}/`}
+              sample={cs.data.sample}
+              revealDelay={60 + i * 80}
+            />
+          ))
+        }
+      </div>
+      <a class="work__all" href="/work/">See all the work <span class="arrow" aria-hidden="true">&rarr;</span></a>
+    </div>
+  </section>
 
   <!-- Forest CTA band — the one signature-surface moment on this page -->
-  <Section surface="forest" id="cta">
-    <div class="cta-band">
-      <h2 class="cta-band__title">
-        Once you cross the Rubicon on a workflow, you don't go back.
-      </h2>
-      <p class="cta-band__body">
-        Tell us about the task that's eating your team's hours. We'll tell you, plainly,
-        whether it's worth automating.
-      </p>
-      <Button variant="primary" href="/contact/">Get in touch</Button>
-    </div>
-  </Section>
+  <CtaBand
+    id="cta"
+    title="Tell us what’s eating your team’s time."
+    lede="One conversation. We’ll point to the task worth automating first — no pitch, no commitment."
+    ctaLabel="Start the conversation"
+    ctaHref="/contact/"
+  />
 </BaseLayout>
+
+<script>
+  import '../scripts/tilt.js';
+</script>
 
 <style>
   /* ---- Hero ---- */
   .hero {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100svh - 4.5rem); /* viewport minus header */
+    min-height: 640px;
+    height: 100vh;
     overflow: hidden;
+    isolation: isolate;
   }
 
-  .hero__content {
-    position: relative;
+  /* Immersive scrim (the approved atmosphere) — thinner at the edges so the
+     footage reads brighter; resolves to solid Pine at the bottom so the hero
+     fades seamlessly into the ticker strip. AA over footage rides on this:
+     the radial center is heavier than the comp's 48% because the muted
+     second tagline line failed 3:1 against the brightest frames
+     (scripts/video-aa-check.mjs) — thicken-the-scrim is the brand remedy,
+     never text over raw footage. */
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
     z-index: 1;
-    flex: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        130% 100% at 50% 32%,
+        color-mix(in srgb, var(--bg) 86%, transparent) 0%,
+        color-mix(in srgb, var(--bg) 82%, transparent) 45%,
+        transparent 68%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--bg) 40%, transparent) 0%,
+        color-mix(in srgb, var(--bg) 8%, transparent) 36%,
+        color-mix(in srgb, var(--bg) 6%, transparent) 58%,
+        color-mix(in srgb, var(--bg) 46%, transparent) 84%,
+        var(--bg) 100%
+      );
+  }
+
+  .hero__inner {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--container-pad);
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    padding-block: var(--space-16);
+    align-items: center;
+    text-align: center;
   }
 
-  .hero__sub {
-    margin-top: var(--space-6);
-    max-width: 38rem;
+  /* The copy hangs high in the frame, clearing the video horizon.
+     (Comp said 35.5rem "matches the headline's rendered width" — but its
+     capture used fallback fonts; real Space Grotesk at Display XL needs
+     ~38.5rem for "Automate the routine." to hold one line.) */
+  .hero__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-6);
+    max-width: 38.5rem;
+    padding-top: clamp(4.25rem, 13vh, 7.75rem);
+  }
+
+  .hero__tagline {
+    margin: 0;
+    font-weight: 500;
+    font-size: var(--text-display-xl);
+    line-height: var(--lh-display-xl);
+    letter-spacing: var(--track-display-xl);
+    color: var(--fg);
+  }
+
+  .hero__tagline span {
+    display: block;
+  }
+
+  .hero__tagline .l2 {
+    color: var(--muted);
+  }
+
+  .hero__lede {
+    margin: 0;
+    width: 100%;
     font-size: var(--text-body-l);
     line-height: var(--lh-body-l);
+    letter-spacing: 0.005em;
     color: var(--muted);
+    text-wrap: pretty;
   }
 
-  .hero__actions {
-    margin-top: var(--space-8);
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-4);
+  @media (max-width: 768px) {
+    .hero__copy {
+      max-width: none;
+      padding-top: clamp(5rem, 16vh, 8rem);
+      gap: var(--space-8);
+    }
   }
 
-  .hero__ticker {
+  /* ---- Ticker strip ---- */
+  .ticker-section {
     position: relative;
-    z-index: 1;
+    z-index: 2;
+    padding-block: var(--space-8) var(--space-12);
   }
 
-  /* ---- Pillars ---- */
-  .pillars {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-    gap: var(--space-8);
-    list-style: none;
+  /* ---- Shared section scaffolding ---- */
+  .section {
+    position: relative;
+    padding-block: var(--section-pad);
+  }
+
+  .shead {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    max-width: 40rem;
+    margin-bottom: var(--space-16);
+  }
+
+  .shead h2 {
     margin: 0;
-    padding: 0;
-  }
-
-  .pillar__title {
-    margin-top: var(--space-4);
-  }
-
-  .pillar__body {
-    margin-top: var(--space-2);
-    color: var(--muted);
-  }
-
-  /* ---- Work ---- */
-  .work-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-    gap: var(--space-6);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .work-empty {
-    border: 1px dashed var(--line);
-    border-radius: var(--radius-lg);
-    padding: var(--space-8);
-    max-width: 38rem;
-  }
-
-  .work-empty a {
-    color: var(--accent);
-  }
-
-  /* ---- Forest CTA band ---- */
-  .cta-band {
-    max-width: 44rem;
-  }
-
-  .cta-band__title {
+    font-weight: 500;
     font-size: var(--text-display-l);
     line-height: var(--lh-display-l);
     letter-spacing: var(--track-display-l);
+    color: var(--fg);
+    text-wrap: balance;
   }
 
-  .cta-band__body {
-    margin-block: var(--space-6);
+  .shead__lede {
+    margin: 0;
     font-size: var(--text-body-l);
     line-height: var(--lh-body-l);
     color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  /* ---- Selected work ---- */
+  .work {
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .work .shead {
+    margin-bottom: var(--space-12);
+  }
+
+  .work__inner {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Footage sits under a Pine scrim so the studies + copy stay fully legible. */
+  .work__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        120% 90% at 50% 38%,
+        color-mix(in srgb, var(--bg) 58%, transparent) 0%,
+        color-mix(in srgb, var(--bg) 80%, transparent) 60%,
+        var(--bg) 100%
+      ),
+      linear-gradient(
+        180deg,
+        var(--bg) 0%,
+        color-mix(in srgb, var(--bg) 62%, transparent) 22%,
+        color-mix(in srgb, var(--bg) 62%, transparent) 78%,
+        var(--bg) 100%
+      );
+  }
+
+  .studies {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+  }
+
+  .studies[data-tilt='on'] {
+    perspective: 1200px;
+  }
+
+  .work__all {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-12);
+    font-size: var(--text-body-m);
+    font-weight: 500;
+    color: var(--accent-text);
+    text-decoration: none;
+    width: fit-content;
+  }
+
+  .work__all .arrow {
+    font-family: var(--font-mono);
+    transition: transform var(--dur-base) var(--ease);
+  }
+
+  .work__all:hover .arrow {
+    transform: translateX(3px);
+  }
+
+  @media (max-width: 768px) {
+    .studies {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

@@ -1,0 +1,142 @@
+---
+/**
+ * "Companies we work with" client-logo ticker (2026-06 design port).
+ *
+ * BUILT BUT NOT RENDERED — no real client logos exist yet, and the brand
+ * does not ship fake social proof (Content-Decisions #5). The homepage keeps
+ * the PillarsTicker until at least one cleared logo lands; then mount this
+ * with a `logos` array and retire the placeholder frames.
+ *
+ * Usage (when real logos exist):
+ *   <LogoMarquee logos={[{ src: '/logos/acme.svg', alt: 'Acme Ltd' }, …]} />
+ */
+interface Props {
+  logos?: { src: string; alt: string }[];
+}
+
+const { logos = [] } = Astro.props;
+const slots = logos.length ? logos : Array.from({ length: 6 }, () => null);
+---
+
+<div class="logo-marquee-strip">
+  <p class="logo-marquee-strip__eyebrow">
+    <span class="tilde" aria-hidden="true">~</span> Companies we work with
+  </p>
+
+  <div class="logo-marquee" aria-label="Companies we work with">
+    <div class="logo-marquee__track">
+      {
+        [false, true].map((isDupe) => (
+          <div class="logo-marquee__group" aria-hidden={isDupe ? 'true' : undefined}>
+            {slots.map((logo) =>
+              logo ? (
+                <img class="logo-marquee__logo" src={logo.src} alt={isDupe ? '' : logo.alt} loading="lazy" />
+              ) : (
+                <span class="logo-marquee__frame" aria-hidden="true">
+                  ~
+                </span>
+              )
+            )}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+  .logo-marquee-strip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-16) 0 var(--space-24);
+  }
+
+  .logo-marquee-strip__eyebrow {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    line-height: var(--lh-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--muted);
+  }
+
+  .logo-marquee-strip__eyebrow .tilde {
+    color: var(--accent-text);
+  }
+
+  /* Two identical groups translate by exactly one group width for a seamless
+     loop; an edge mask fades logos in/out like a stock ticker. */
+  .logo-marquee {
+    margin-top: var(--space-12);
+    width: 100%;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+  }
+
+  .logo-marquee__track {
+    display: flex;
+    width: max-content;
+    animation: logo-ticker 44s linear infinite;
+  }
+
+  .logo-marquee:hover .logo-marquee__track {
+    animation-play-state: paused;
+  }
+
+  .logo-marquee__group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-16);
+    padding-right: var(--space-16); /* trailing gap → group widths match */
+  }
+
+  .logo-marquee__logo,
+  .logo-marquee__frame {
+    width: 190px;
+    height: 60px;
+    flex: 0 0 auto;
+  }
+
+  .logo-marquee__logo {
+    object-fit: contain;
+  }
+
+  .logo-marquee__frame {
+    display: grid;
+    place-items: center;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    background: color-mix(in srgb, var(--bone) 6%, transparent);
+    border: 1px solid color-mix(in srgb, var(--bone) 20%, transparent);
+    border-radius: var(--radius-md);
+  }
+
+  @keyframes logo-ticker {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .logo-marquee__track {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .logo-marquee__logo,
+    .logo-marquee__frame {
+      width: 150px;
+      height: 52px;
+    }
+  }
+</style>

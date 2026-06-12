@@ -1,0 +1,285 @@
+---
+/**
+ * Case-study card (2026-06 design port) — tinted results banner with the
+ * headline metric, body summary, and a whole-card link to the study. On the
+ * dark canvas; the grid that mounts these owns the 3D tilt (src/scripts/tilt.js).
+ *
+ * `sample` renders the visible "sample data" badge — mock studies awaiting
+ * realization (Content-Decisions #3) must never read as real claims.
+ */
+export interface Props {
+  title: string;
+  summary: string;
+  sector: string;
+  metric: { value: string; unit?: string; caption: string };
+  tint: 'sage' | 'honey' | 'forest';
+  href: string;
+  sample?: boolean;
+  as?: 'h2' | 'h3';
+  revealDelay?: number;
+}
+
+const {
+  title,
+  summary,
+  sector,
+  metric,
+  tint,
+  href,
+  sample = false,
+  as: Heading = 'h3',
+  revealDelay,
+} = Astro.props;
+---
+
+<article
+  class="study"
+  data-reveal
+  style={revealDelay ? `--reveal-delay: ${revealDelay}ms` : undefined}
+>
+  <div class="study__banner" data-tint={tint}>
+    <span class="study__kicker">{sector}</span>
+    {sample && <span class="study__sample"><span class="dot" /> sample data &mdash; numbers illustrative</span>}
+    <span class="study__metric">{metric.value}{metric.unit && <span class="unit">&thinsp;{metric.unit}</span>}</span>
+    <span class="study__cap">{metric.caption}</span>
+  </div>
+  <div class="study__body">
+    <Heading class="study__title">{title}</Heading>
+    <p>{summary}</p>
+    <a class="study__link" href={href}>Read the study <span class="arrow" aria-hidden="true">&rarr;</span></a>
+  </div>
+</article>
+
+<script>
+  // The whole card is a generous hit target for its study link. Synthesizing
+  // a click on the real <a> keeps every interception (curtain, reader) intact.
+  document.querySelectorAll<HTMLElement>('.study').forEach((card) => {
+    card.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) return;
+      card.querySelector<HTMLAnchorElement>('.study__link')?.click();
+    });
+  });
+</script>
+
+<style>
+  .study {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: color-mix(in srgb, var(--bone) 3%, transparent);
+    transition:
+      border-color var(--dur-base) var(--ease),
+      transform var(--dur-base) var(--ease);
+  }
+
+  .study:hover {
+    border-color: color-mix(in srgb, var(--accent) 42%, var(--line));
+    transform: translateY(-3px);
+  }
+
+  /* Banner — a designed results header; a real screenshot can replace it later. */
+  .study__banner {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-height: 196px;
+    padding: var(--space-6);
+    isolation: isolate;
+  }
+
+  .study__kicker {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    line-height: var(--lh-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .study__sample {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: fit-content;
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid color-mix(in srgb, var(--accent-2) 40%, transparent);
+    border-radius: var(--radius-full);
+  }
+
+  .study__sample .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--accent-2);
+  }
+
+  .study__metric {
+    position: relative;
+    z-index: 1;
+    margin-top: auto;
+    font-weight: 500;
+    font-size: clamp(2.5rem, 1.6rem + 3vw, 3.25rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .study__metric .unit {
+    font-size: 0.38em;
+    letter-spacing: 0;
+    color: var(--muted);
+  }
+
+  .study__cap {
+    position: relative;
+    z-index: 1;
+    font-size: var(--text-body-s);
+    line-height: var(--lh-body-s);
+    color: var(--muted);
+    max-width: 24ch;
+  }
+
+  /* Banner tints — sage / honey / forest, cycling the brand accents */
+  .study__banner[data-tint='sage'] {
+    background: linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--sage) 26%, var(--pine)) 0%,
+      var(--pine) 72%
+    );
+  }
+  .study__banner[data-tint='sage'] .study__metric {
+    color: var(--sage);
+  }
+
+  .study__banner[data-tint='honey'] {
+    background: linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--honey) 24%, var(--pine)) 0%,
+      var(--pine) 72%
+    );
+  }
+  .study__banner[data-tint='honey'] .study__metric {
+    color: var(--honey);
+  }
+
+  .study__banner[data-tint='forest'] {
+    background: linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--forest) 82%, var(--pine)) 0%,
+      var(--pine) 78%
+    );
+  }
+  .study__banner[data-tint='forest'] .study__metric {
+    color: var(--sage);
+  }
+
+  .study__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    border-top: 1px solid var(--line);
+    flex: 1;
+  }
+
+  .study__title {
+    margin: 0;
+    font-size: var(--text-h3);
+    line-height: var(--lh-h3);
+    letter-spacing: var(--track-h3);
+    font-weight: 500;
+    color: var(--fg);
+  }
+
+  .study__body p {
+    margin: 0;
+    font-size: var(--text-body-s);
+    line-height: var(--lh-body-s);
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  .study__link {
+    margin-top: auto;
+    padding-top: var(--space-2);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-body-s);
+    font-weight: 500;
+    color: var(--accent-text);
+    text-decoration: none;
+    width: fit-content;
+  }
+
+  .study__link .arrow {
+    font-family: var(--font-mono);
+    transition: transform var(--dur-base) var(--ease);
+  }
+
+  .study__link:hover .arrow {
+    transform: translateX(3px);
+  }
+
+  /* ---- 3D tilt (armed by src/scripts/tilt.js setting data-tilt="on" on the
+     grid; skipped entirely under reduced motion) ---- */
+  :global([data-tilt='on']) .study {
+    overflow: visible; /* preserve-3d is ignored under overflow:hidden */
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition:
+      transform var(--dur-tilt-follow) ease-out,
+      border-color var(--dur-base) var(--ease);
+  }
+
+  :global([data-tilt='on']) .study:hover {
+    transform: none; /* JS owns the transform now */
+  }
+
+  :global([data-tilt='on']) .study__banner {
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    transition: transform var(--dur-tilt-settle) var(--ease-settle);
+  }
+
+  :global([data-tilt='on']) .study__body {
+    transform-style: preserve-3d;
+    transition: transform var(--dur-tilt-settle) var(--ease-settle);
+  }
+
+  :global([data-tilt='on']) .study__title,
+  :global([data-tilt='on']) .study__link {
+    transition: transform var(--dur-tilt-settle) var(--ease-settle);
+  }
+
+  :global([data-tilt='on']) .study.is-active .study__banner {
+    transform: translateZ(70px);
+  }
+  :global([data-tilt='on']) .study.is-active .study__body {
+    transform: translateZ(34px);
+  }
+  :global([data-tilt='on']) .study.is-active .study__title {
+    transform: translateZ(26px);
+  }
+  :global([data-tilt='on']) .study.is-active .study__link {
+    transform: translateZ(18px);
+  }
+
+  :global([data-tilt='on']) .study.is-active {
+    border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+    box-shadow: 0 30px 60px -28px color-mix(in srgb, var(--pine) 65%, transparent);
+  }
+</style>

@@ -1,0 +1,321 @@
+---
+/**
+ * Four-pillar pipeline (2026-06 design port) — the steps read as ONE
+ * connected sequence: a faint rail links the icon nodes and fills sage as
+ * work moves through; the active step lifts, its node fills sage and pulses.
+ * Auto-advances; hover / click / focus takes manual control. Active emphasis
+ * is enhancement only — every step's copy stays legible without JS or
+ * animation (reduced motion shows a static active step, no pulse).
+ */
+import Icon from './Icon.astro';
+
+const steps = [
+  {
+    icon: 'search',
+    title: 'Find the bottleneck',
+    body: 'We map the manual tasks quietly eating your team’s hours — the reports, the re-keying, the copy-paste between systems nobody owns.',
+  },
+  {
+    icon: 'nodes',
+    title: 'Build the fit',
+    body: 'We build automation that fits the way you already work, inside the tools you already pay for. No rip-and-replace, no new platform to learn.',
+  },
+  {
+    icon: 'check-circle',
+    title: 'Verify the accuracy',
+    body: 'Accuracy climbs as the busywork disappears. We test against your real cases before a single step goes live — nothing ships on a guess.',
+  },
+  {
+    icon: 'clock',
+    title: 'Hand back the hours',
+    body: 'Your people get their hours back for the judgment calls and the relationships — the work that actually needs a person.',
+  },
+] as const;
+---
+
+<div class="pillar-flow">
+  <div class="pillar-flow__rail" aria-hidden="true"><span class="pillar-flow__rail-fill"></span></div>
+  {
+    steps.map(({ icon, title, body }, i) => (
+      <article
+        class:list={['pillar', { 'is-active': i === 0 }]}
+        data-reveal
+        style={`--reveal-delay: ${i * 90}ms`}
+      >
+        <div class="pillar__head">
+          <span class="pillar__ico">
+            <Icon name={icon} size={26} />
+          </span>
+          <span class="pillar__num">0{i + 1}</span>
+        </div>
+        <h3>{title}</h3>
+        <p>{body}</p>
+      </article>
+    ))
+  }
+</div>
+
+<script>
+  // A node walks through Find → Build → Verify → Hand back: the rail fills
+  // sage behind completed steps. Auto-advances when the tab is visible;
+  // hover / click / focus pauses the cycle and takes control.
+  const flow = document.querySelector<HTMLElement>('.pillar-flow');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (flow) {
+    const pillars = Array.from(flow.querySelectorAll<HTMLElement>('.pillar'));
+    let active = 0;
+    let timer: ReturnType<typeof setInterval> | null = null;
+
+    const render = () => {
+      flow.style.setProperty(
+        '--flow-fill',
+        `${pillars.length > 1 ? (active / (pillars.length - 1)) * 100 : 0}%`
+      );
+      pillars.forEach((p, i) => {
+        p.classList.toggle('is-active', i === active);
+        p.classList.toggle('is-done', i < active);
+      });
+    };
+    const go = (i: number) => {
+      active = ((i % pillars.length) + pillars.length) % pillars.length;
+      render();
+    };
+    const stop = () => {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    };
+    const start = () => {
+      stop();
+      if (reduce) return;
+      if (document.visibilityState !== 'visible') return;
+      timer = setInterval(() => go(active + 1), 3400);
+    };
+
+    pillars.forEach((p, i) => {
+      p.setAttribute('tabindex', '0');
+      p.setAttribute('role', 'button');
+      p.addEventListener('mouseenter', () => {
+        go(i);
+        stop();
+      });
+      p.addEventListener('mouseleave', start);
+      p.addEventListener('focus', () => {
+        go(i);
+        stop();
+      });
+      p.addEventListener('blur', start);
+      p.addEventListener('click', () => go(i));
+      p.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          go(i);
+        }
+      });
+    });
+
+    render();
+    start();
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') start();
+      else stop();
+    });
+  }
+</script>
+
+<style>
+  .pillar-flow {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-8);
+  }
+
+  /* one continuous rail behind the icon row: a faint track spanning the first
+     icon centre to the last, with a sage fill that grows to the active step.
+     (icon centres sit at colW/2 and 100%-colW/2; colW = (100% - 3·gap)/4.) */
+  .pillar-flow__rail {
+    position: absolute;
+    top: 50px;
+    left: calc((100% - 3 * var(--space-8)) / 8);
+    right: calc((100% - 3 * var(--space-8)) / 8);
+    height: 2px;
+    background: var(--line);
+    z-index: 0;
+  }
+
+  .pillar-flow__rail-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--flow-fill, 0%);
+    background: var(--accent);
+    transition: width var(--dur-base) var(--ease);
+  }
+
+  .pillar {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-5);
+    min-height: 284px;
+    padding: var(--space-6) var(--space-4);
+    border: 1px solid transparent;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition:
+      background-color var(--dur-base) var(--ease),
+      border-color var(--dur-base) var(--ease),
+      transform var(--dur-base) var(--ease);
+  }
+
+  .pillar__head {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  /* icon node sits ON the rail and masks the line behind it */
+  .pillar__ico {
+    flex: 0 0 auto;
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-md);
+    background: var(--sage-tint-13);
+    color: var(--accent);
+    position: relative;
+    z-index: 1;
+    transition:
+      background-color var(--dur-base) var(--ease),
+      color var(--dur-base) var(--ease),
+      transform var(--dur-base) var(--ease);
+  }
+
+  .pillar__num {
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    color: var(--accent-2); /* honey mono detail on dark */
+  }
+
+  .pillar h3 {
+    margin: 0;
+    font-size: var(--text-h2);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--track-h2);
+    font-weight: 500;
+    color: var(--fg);
+    transition: color var(--dur-base) var(--ease);
+  }
+
+  /* upcoming steps read a touch quieter — never invisible */
+  .pillar p {
+    margin: 0;
+    font-size: var(--text-body-m);
+    line-height: var(--lh-body-m);
+    color: var(--muted);
+    text-wrap: pretty;
+    opacity: 0.72;
+    transition: opacity var(--dur-base) var(--ease);
+  }
+
+  /* completed steps: a filled-tint node */
+  .pillar.is-done .pillar__ico {
+    background: color-mix(in srgb, var(--accent) 24%, transparent);
+  }
+
+  /* ACTIVE step: node fills sage, the card lifts, its copy brightens */
+  .pillar.is-active {
+    background: color-mix(in srgb, var(--bone) 4%, transparent);
+    border-color: var(--line);
+    transform: translateY(-6px);
+  }
+
+  .pillar.is-active .pillar__ico {
+    background: var(--accent);
+    color: var(--pine);
+    transform: scale(1.12);
+  }
+
+  .pillar.is-active .pillar__num {
+    color: var(--accent-text);
+  }
+
+  .pillar.is-active p {
+    opacity: 1;
+  }
+
+  /* pulsing ring radiating from the active node */
+  .pillar.is-active .pillar__ico::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    border: 2px solid var(--accent);
+    animation: flow-pulse 2.1s var(--ease) infinite;
+    pointer-events: none;
+  }
+
+  @keyframes flow-pulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.65;
+    }
+    70% {
+      transform: scale(1.55);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1.55);
+      opacity: 0;
+    }
+  }
+
+  .pillar:focus-visible {
+    outline: none;
+  }
+
+  .pillar:focus-visible .pillar__ico {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pillar.is-active .pillar__ico::after {
+      animation: none;
+    }
+    .pillar {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .pillar-flow {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    /* the rail only reads in a single row — drop it once the pipeline wraps,
+       but keep the active-step highlight */
+    .pillar-flow__rail {
+      display: none;
+    }
+    .pillar {
+      min-height: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .pillar-flow {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+  }
+</style>

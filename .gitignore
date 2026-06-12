@@ -33,3 +33,6 @@ docs/design/inbox/*
 
 # logs
 npm-debug.log*
+
+# Gate-run screenshot output (reproducible)
+docs/port-shots/

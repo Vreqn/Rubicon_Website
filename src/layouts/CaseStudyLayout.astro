@@ -1,8 +1,13 @@
 ---
 /**
- * Case-study detail shell — light surface (people are reading).
- * The outcomes block renders ONLY when real metrics exist in frontmatter;
- * outcomes are never invented (see Content-Decisions.md #3).
+ * Case-study detail shell — light surface (people are reading; the dark
+ * reader panel is a modal moment on /work/, not a long-form page).
+ * 2026-06 design port: meta row, stat row, and quote render from frontmatter;
+ * the narrative sections come from the markdown body.
+ *
+ * `sample` studies (mock content awaiting realization, Content-Decisions #3)
+ * get a visible badge AND noindex — fabricated numbers must not enter the
+ * index under the brand's name.
  */
 import BaseLayout from './BaseLayout.astro';
 import Eyebrow from '../components/Eyebrow.astro';
@@ -11,12 +16,25 @@ interface Props {
   title: string;
   description: string;
   sector: string;
-  clientLabel?: string;
-  outcomes?: { label: string; value: string }[];
+  lede?: string;
+  timeline?: string;
+  stack?: string[];
+  stats?: { value: string; unit?: string; label: string }[];
+  quote?: { text: string; attribution: string };
+  sample?: boolean;
 }
 
-const { title, description, sector, clientLabel, outcomes = [] } = Astro.props;
-const sectorLabel = sector.replace(/-/g, ' ');
+const {
+  title,
+  description,
+  sector,
+  lede,
+  timeline,
+  stack = [],
+  stats = [],
+  quote,
+  sample = false,
+} = Astro.props;
 ---
 
 <BaseLayout
@@ -24,32 +42,58 @@ const sectorLabel = sector.replace(/-/g, ' ');
   description={description}
   surface="light"
   ogType="article"
+  noindex={sample}
 >
   <article class="cs">
     <div class="container">
       <header class="cs__header">
-        <Eyebrow>Case study &middot; {sectorLabel}</Eyebrow>
+        <Eyebrow>Case study &middot; {sector}</Eyebrow>
+        {sample && (
+          <p class="cs__sample">
+            <span class="dot" aria-hidden="true" /> sample data &mdash; numbers illustrative
+          </p>
+        )}
         <h1 class="cs__title">{title}</h1>
-        {clientLabel && <p class="cs__client">{clientLabel}</p>}
+        {lede && <p class="cs__lede">{lede}</p>}
       </header>
 
-      {outcomes.length > 0 && (
-        <dl class="cs__outcomes">
-          {outcomes.map(({ label, value }) => (
-            <div class="cs__outcome">
-              <dt>{label}</dt>
-              <dd>{value}</dd>
-            </div>
-          ))}
-        </dl>
-      )}
+      <dl class="cs__meta">
+        <div><dt>Sector</dt><dd>{sector}</dd></div>
+        {timeline && <div><dt>Timeline</dt><dd>{timeline}</dd></div>}
+        {stack.length > 0 && <div><dt>Stack</dt><dd>{stack.join(' · ')}</dd></div>}
+      </dl>
 
       <div class="prose">
         <slot />
       </div>
 
+      {
+        stats.length > 0 && (
+          <div class="cs__stats">
+            {stats.map(({ value, unit, label }) => (
+              <div class="cs__stat">
+                <span class="n">
+                  {value}
+                  {unit && <span class="u">&thinsp;{unit}</span>}
+                </span>
+                <span class="l">{label}</span>
+              </div>
+            ))}
+          </div>
+        )
+      }
+
+      {
+        quote && (
+          <blockquote class="cs__quote">
+            <p>{quote.text}</p>
+            <cite>{quote.attribution}</cite>
+          </blockquote>
+        )
+      }
+
       <p class="cs__back">
-        <a href="/work/">&larr; All case studies</a>
+        <a href="/work/">&larr; All work</a>
       </p>
     </div>
   </article>
@@ -62,43 +106,122 @@ const sectorLabel = sector.replace(/-/g, ' ');
 
   .cs__header {
     max-width: var(--container-prose);
-    margin-bottom: var(--space-12);
+    margin-bottom: var(--space-8);
+  }
+
+  .cs__sample {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: var(--space-3) 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid color-mix(in srgb, var(--accent-2) 50%, transparent);
+    border-radius: var(--radius-full);
+  }
+
+  .cs__sample .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--accent-2);
   }
 
   .cs__title {
     margin-top: var(--space-3);
   }
 
-  .cs__client {
+  .cs__lede {
     margin-top: var(--space-3);
+    font-size: var(--text-body-l);
+    line-height: var(--lh-body-l);
     color: var(--muted);
   }
 
-  .cs__outcomes {
+  .cs__meta {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-8);
     margin: 0 0 var(--space-12);
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    max-width: var(--container-prose);
+  }
+
+  .cs__meta dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    line-height: var(--lh-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    text-transform: uppercase;
+    color: var(--accent-text);
+  }
+
+  .cs__meta dd {
+    margin: var(--space-1) 0 0;
+    font-size: var(--text-body-s);
+    line-height: var(--lh-body-s);
+  }
+
+  .cs__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-8);
+    margin-top: var(--space-12);
     padding: var(--space-6);
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
     max-width: var(--container-prose);
   }
 
-  .cs__outcome dt {
-    font-family: var(--font-mono);
-    font-size: var(--text-eyebrow);
-    line-height: var(--lh-eyebrow);
-    letter-spacing: var(--track-eyebrow);
-    text-transform: uppercase;
-    color: var(--accent);
+  .cs__stat .n {
+    display: block;
+    font-size: var(--text-h1);
+    line-height: var(--lh-h1);
+    letter-spacing: var(--track-h1);
+    font-weight: 500;
+    color: var(--accent-text);
   }
 
-  .cs__outcome dd {
-    margin: var(--space-1) 0 0;
-    font-size: var(--text-h2);
-    line-height: var(--lh-h2);
-    font-weight: 500;
+  .cs__stat .u {
+    font-size: 0.5em;
+    color: var(--muted);
+  }
+
+  .cs__stat .l {
+    display: block;
+    margin-top: var(--space-1);
+    font-size: var(--text-body-s);
+    line-height: var(--lh-body-s);
+    color: var(--muted);
+    max-width: 16rem;
+  }
+
+  .cs__quote {
+    margin: var(--space-12) 0 0;
+    padding-left: var(--space-4);
+    border-left: 2px solid var(--accent);
+    max-width: var(--container-prose);
+  }
+
+  .cs__quote p {
+    font-size: var(--text-h3);
+    line-height: var(--lh-h3);
+    color: var(--fg);
+  }
+
+  .cs__quote cite {
+    display: block;
+    margin-top: var(--space-3);
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-inline);
+    color: var(--muted);
   }
 
   .cs__back {
