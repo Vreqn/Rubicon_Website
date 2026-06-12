@@ -4,27 +4,34 @@ Real-world facts and brand forks that aren't the agent's to decide. Each entry: 
 
 ---
 
-## 1. Services list & pricing — RESOLVED 2026-06-10
+## 1. Services list & pricing — REOPENED 2026-06-12 (design loop changed the list)
 
-- **Decision:** Capability areas, no packages, no pricing. Five real areas confirmed by Krisztian, now live on the Services page under "What we build": Automated reporting · Connecting systems · Data entry automation · Document processing · Verification & summarization tools. Closing note states every engagement is scoped individually, starting with one bottleneck.
+- **Was resolved 2026-06-10:** five capability areas (Automated reporting · Connecting systems · Data entry automation · Document processing · Verification & summarization tools).
+- **Issue:** The 2026-06 Claude Design comp shipped a **six-engagement** list instead, now live on `/services/` per the approved full port: Workflow audit · Process automation · Reporting & data pipelines · System integration · Document & inbox handling · Care & maintenance (each with a mono "deliverable" line).
+- **Why:** What Rubicon actually sells is a real-world fact. The six-engagement framing covers the same ground plus the audit + care bookends, but it supersedes a list Krisztian explicitly confirmed.
+- **Options:** (a) Confirm the six engagements as the canonical list; (b) revert to the five areas (copy swap in `src/pages/services.astro`); (c) edit the six in place.
+- **Decision:**
 
 ## 2. Public contact details — RESOLVED 2026-06-10
 
 - **Decision:** Public email = `krisztian@rubiconworkflows.ca`, now live in the footer, contact-page sidebar (as a `mailto:` link), and the LocalBusiness JSON-LD `email` field. No phone or street address for now — structured data stays name + Vancouver locality + URL + email (valid). Revisit address/phone later for stronger local SEO.
 
-## 3. Case studies — PENDING (Krisztian to supply)
+## 3. Case studies — UPDATED 2026-06-12 (three SAMPLE studies now ship, per Krisztian)
 
-- **Decision so far:** Keep the honest empty state for launch ("being written up — ask us about it"). Krisztian will provide one real case study (client descriptor + what was built + verified outcomes) in a later session; I'll draft it from exactly what he gives and set `draft: false` only after his review. Template stays `draft: true`.
+- **Decision so far:** Per Krisztian's call during the design port, the three studies from the design loop ship as **editable mock content**: `src/content/work/{dispatch,intake,reconcile}.md`. Every number, sector, quote, and attribution in them is **illustrative, not real**. Containment while mock: a visible "sample data — numbers illustrative" badge on every card/reader/detail render, `noindex` on the detail pages, and exclusion from the sitemap (`astro.config.mjs`).
+- **Realization path (per study):** edit the `.md` facts to a real engagement's, flip `sample: false`, remove the slug from the sitemap filter in `astro.config.mjs`. The honest empty state still exists as the fallback if all studies are ever pulled (`draft: true`).
 
-## 4. Team bios (About page) — PENDING (Krisztian to supply text)
+## 4. Team bios (About page) — UPDATED 2026-06-12 (founders copy live, confirm wording)
 
-- **Decision:** A short joint "who we are" paragraph (no individual bios/photos). Krisztian will supply the exact wording; I'll shape it to brand voice. The "Who's behind it" section stays with a TODO badge until then.
+- **Now live (from the design comp):** the About page names **Krisztian Kadar** and **Attila Kadar** as Co-founders (hero meta line + two-name signature block), with the "Rubicon is the two of us" narrative — no individual bios, no headshots.
+- **Needs Krisztian:** confirm the names/roles/wording are exactly right (they're public-facing claims). Edit points: `src/pages/about.astro` (hero meta + signature block).
 
-## 5. Testimonials / social proof
+## 5. Testimonials / social proof — UPDATED 2026-06-12 (marquee built, hidden)
 
-- **Issue:** No testimonials exist on the site. The hero reference design had a client-logo marquee; it was replaced with a four-pillars ticker because we have no client logos cleared for use.
-- **Why:** Quotes and logos require real clients and their permission.
-- **Options:** (a) Collect quotes from past work; (b) sector keywords instead of logos; (c) none for launch.
+- **Issue:** No testimonials or cleared client logos exist. The 2026-06 design comp included a "Companies we work with" logo marquee; per Krisztian's call it is **built but not rendered** — `src/components/LogoMarquee.astro` exists, the homepage keeps the PillarsTicker in that slot.
+- **Why:** Quotes and logos require real clients and their permission; an empty/fake logo wall is exactly what the brand refuses.
+- **When logos land:** import LogoMarquee in `src/pages/index.astro` and pass `logos=[{src, alt}…]` (the post-hero strip has a pointer comment).
+- **Options for the interim:** (a) collect quotes from past work; (b) sector keywords; (c) ticker only (current).
 - **Decision:**
 
 ## 6. Wordmark lockup — AWAITING KRISZTIAN (agent recommends "bless interim")
@@ -53,9 +60,17 @@ Real-world facts and brand forks that aren't the agent's to decide. Each entry: 
 
 - **Decision:** Accept the AA-safe derived muted-text tokens (current behavior). Slate stays restricted to large text/dividers/decorative use; body-size muted text uses `--text-muted-on-dark`/`--text-muted-on-light`. This is the only WCAG-AA-compliant option without changing the palette, and the project a11y gate requires AA (Lighthouse a11y = 100 confirms). Krisztian may optionally darken Slate in a future brand v0.3 — if so, update `tokens.css` only.
 
-## 11. Hero CTA wording — RESOLVED 2026-06-10
+## 11. Hero CTA wording — RESOLVED 2026-06-10; NOTE 2026-06-12
 
-- **Decision:** Primary hero CTA now reads "Tell us what's eating your time" (links to `/contact`), matching the contact-page heading. Secondary button stays "How we work" → `/services`.
+- **Decision:** Primary hero CTA read "Tell us what's eating your time" (→ `/contact`), secondary "How we work" (→ `/services`).
+- **Note (design port):** the approved 2026-06 comp removes the hero buttons entirely — the homepage hero is now copy-only, and the resolved CTA wording lives on in the **Forest CTA band** ("Tell us what's eating your team's time." → "Start the conversation"). If hero buttons should return, that's a one-section edit in `src/pages/index.astro`.
+
+## 15. Email alias & social handle (from the design comps) — NEW 2026-06-12
+
+- **Issue:** The design comps use `hello@rubiconworkflows.ca` throughout; the site ships the resolved `krisztian@rubiconworkflows.ca` (#2). The comps also link `@rubiconworkflows` — but no real profile URL exists, so the handle renders as plain text (footer + contact aside), never a dead link.
+- **Why:** Creating a `hello@` alias and choosing/creating the social profile are owner actions.
+- **Options:** (a) keep krisztian@ everywhere; (b) create the hello@ alias and swap site-wide (Footer.astro, contact.astro, index.astro JSON-LD); (c) add the real social URL when a profile exists.
+- **Decision:**
 
 ## 12. First real blog posts
 

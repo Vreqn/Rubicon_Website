@@ -2,6 +2,96 @@ RUBICON WORKFLOWS WEBSITE — RELEASE NOTES
 Running log of changes. Newest entries at top.
 
 =========================================================
+2026-06-12 — Claude Design port (Session 2): full site redesign
+=========================================================
+Branch: design-port (Vercel preview; merge to main deploys to prod).
+The complete Claude Design export (docs/design/inbox/) ported in seven
+staged commits, gates green after every stage.
+
+STAGE 0 — assets. Six encodes from the drop (ffmpeg H.264 CRF 28-32,
+audio stripped, faststart): services-hero 2.3MB, about-hero 0.6MB,
+glow 1.5MB (one file shared by work hero / contact hero / home ambient
+— the drop's work-glow and contact-hero were byte-identical), cascade
+2.1MB, engage 2.8MB, wavelength 0.2MB, + 3 posters. Masters archived
+in _assets-source/ (gitignored). Inbox hero.mp4 was byte-identical to
+the shipped one.
+
+STAGE 1 — foundations. New tokens (curtain/reveal/tilt durations,
+named video-opacity caps, z-modal/z-curtain, space-5/10); page-
+transition curtain (Pine panel + sage ~, armed pre-paint, fails open,
+reduced-motion = none); scroll reveal gated behind html.js (no-JS
+never hides content); BgVideo component (generalizes HeroVideo:
+data-max caps, lazy IntersectionObserver loading + off-screen pause
+for ambients, reduced-motion = poster); Header overlay mode + comp
+restyle (hamburger KEPT — comps dropped mobile nav, not ported);
+Footer redesign (Sitemap/Connect cols; krisztian@ kept per CD #2;
+@handle as text); CtaBand (compact Forest, centered); Button pill +
+arrow.
+
+STAGE 2 — homepage. Full-viewport hero at cap 1.0 (no hero CTAs, no
+hanging index — per comp; CD #11 noted), pillars ticker strip,
+PillarFlow pipeline (rail fill + auto-advance + pulse), proof section
+with lazy glow ambient + 3 tilting study cards, Forest CTA band.
+Work collection schema reworked (sector string, metric/stats/quote/
+tint/sample) and THREE SAMPLE STUDIES ship as editable markdown with
+visible sample-data badges, noindex, sitemap exclusion (CD #3 —
+Krisztian's call; realize by editing facts + flipping sample: false).
+LogoMarquee BUILT BUT NOT RENDERED (CD #5). CaseStudyLayout redesigned
+on light. HeroVideo + CaseStudyCard retired.
+
+STAGE 3 — work page. PageHero (shared interior hero), StudyReader
+overlay (card click or /work/#slug deep link, real focus trap, scroll
+lock, Esc/backdrop, focus restore; 13/13 interaction checks), home
+cards link /work/#slug cross-page, standalone study pages stay as the
+no-JS/crawlable home.
+
+STAGE 4 — services. Six-engagement ServiceCard grid (perimeter glow,
+mono deliverable feet) — NOTE: supersedes the five areas resolved in
+CD #1, reopened for re-confirmation. EngageTimeline living rail
+(signal draw, node ignition, looping comet; reduced-motion = lit end
+state), lazy engage ambient at 0.35.
+
+STAGE 5 — about. Cover-fit rolling-hills hero with founders meta
+(names per comp — CD #4 to confirm wording), founders signature block,
+comet-card principles over lazy wavelength film, MethodAccordion
+(auto-advance, all-open under no-JS/reduced-motion), sticky We-won't/
+We-will stance ledger over lazy cascade film. Initial video transfer
+0.75MB; cascade loads only on scroll (network-log verified).
+
+STAGE 6 — contact. Short glow hero, underline-field ContactForm
+(Formspree mechanics kept: honeypot, _next redirect, disabled + TODO
+badge until PUBLIC_FORMSPREE_ENDPOINT exists — CD #14), aside with
+email/handle/what-happens-next, thanks page restyled (~ treatment).
+
+AA CORRECTIONS AT PORT TIME (brand law: verified, not assumed — new
+gate scripts/video-aa-check.mjs samples the rendered composite against
+worst-case video frames):
+- comp's immersive hero scrim failed 1.0:1 for the lede → heavier
+  radial plateau behind the copy on every video hero (+ mobile bands)
+- pagehero mono meta line honey -> muted (honey at 13px over footage
+  repeatedly failed 4.5:1; honey stays for static dark details)
+- principle cards made opaque (translucent cards put body text over
+  raw footage)
+- accent-2 small text on LIGHT surfaces (= Slate, fails per CD #10)
+  fixed on form labels, next-step numerals, detail-page sample badge
+- contact placeholder color comp pine-38% (2.2:1) -> muted
+
+FINAL SWEEP: linkinator clean (29 links, 0 broken, no .html hrefs);
+Lighthouse 100/100/100 on /, /services/, /work/, /about/, /contact/,
+/blog/ (sample study + thanks show SEO 66 from their deliberate
+noindex); reduced-motion pass on all 8 routes (all reveals visible,
+zero videos playing); blog still hidden from nav; sitemap excludes
+sample studies; curtain + reader + form interaction checks green;
+0px overflow at 375/768/1280 everywhere.
+
+Helper scripts: screenshot.mjs now auto-scrolls (reveals/lazy videos
+fire before capture); new video-aa-check.mjs (WCAG over worst-case
+frames, --video=N for section ambients) and reader-check.mjs.
+hero-video-check.mjs is superseded by video-aa-check.mjs.
+Curated comp references kept at docs/design/reference/2026-06-port/;
+inbox cleared (README stays).
+
+=========================================================
 2026-06-10 — Design brief + docs sync (Session 1, part 5)
 =========================================================
 - DESIGN-BRIEF.md added: complete hand-off pack for the Claude Design /

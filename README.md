@@ -52,8 +52,9 @@ Secrets (form endpoint, analytics) live in Vercel environment variables — neve
 
 ## Helper scripts (`scripts/`)
 
-- `screenshot.mjs <url> <outDir> <name>` — full-page captures at 375/768/1280 with horizontal-overflow check.
+- `screenshot.mjs <url> <outDir> <name>` — full-page captures at 375/768/1280 with horizontal-overflow check; auto-scrolls first so scroll reveals and lazy background videos are in their final state.
 - `interaction-checks.mjs` — keyboard focus order, mobile menu toggle, contact-form disabled state.
-- `hero-video-check.mjs <outDir>` — confirms the hero video loads, plays, and caps opacity.
+- `video-aa-check.mjs <url> [--video=N] "<selector>|<large|normal>" […]` — WCAG AA gate for text over background video: samples the rendered composite at worst-case frames and reports the worst contrast ratio per selector. `--video=N` targets a below-fold section ambient.
+- `reader-check.mjs [base]` — case-study reader interaction gate (open/close paths, focus trap, scroll lock, deep links, reduced motion).
 
 All use `playwright-core` against the installed Chrome (no browser download).
