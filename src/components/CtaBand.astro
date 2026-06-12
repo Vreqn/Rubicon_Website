@@ -1,0 +1,88 @@
+---
+/**
+ * Forest CTA band (2026-06 design port) — the one "unmistakably us"
+ * signature surface, kept compact so it reads as a focused closing call,
+ * not a page of its own. Centered composition per the approved comp.
+ */
+interface Props {
+  title: string;
+  lede: string;
+  ctaLabel: string;
+  ctaHref: string;
+  id?: string;
+}
+
+const { title, lede, ctaLabel, ctaHref, id } = Astro.props;
+---
+
+<section data-surface="forest" id={id} class="cta-band">
+  <div class="container cta-band__inner">
+    <h2>{title}</h2>
+    <p class="cta-band__lede">{lede}</p>
+    <a class="cta-band__btn" href={ctaHref}>{ctaLabel} <span class="arrow" aria-hidden="true">&rarr;</span></a>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    overflow: hidden;
+    padding-block: clamp(1.25rem, 2.4vw, 2.1rem);
+  }
+
+  .cta-band__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-6);
+    max-width: 46rem;
+  }
+
+  .cta-band h2 {
+    margin: 0;
+    font-weight: 500;
+    font-size: var(--text-display-xl);
+    line-height: var(--lh-display-xl);
+    letter-spacing: var(--track-display-xl);
+    color: var(--fg);
+    text-wrap: balance;
+  }
+
+  .cta-band__lede {
+    margin: 0;
+    font-size: var(--text-body-l);
+    line-height: var(--lh-body-l);
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  .cta-band__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-8);
+    border-radius: var(--radius-full);
+    background: var(--cta-bg); /* bone on forest */
+    color: var(--cta-fg);
+    font-size: var(--text-body-m);
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    text-decoration: none;
+    width: fit-content;
+    transition: background-color var(--dur-fast) var(--ease);
+  }
+
+  .cta-band__btn .arrow {
+    font-family: var(--font-mono);
+    transition: transform var(--dur-base) var(--ease);
+  }
+
+  .cta-band__btn:hover {
+    background: color-mix(in srgb, var(--cta-bg) 90%, var(--forest));
+    color: var(--cta-fg);
+  }
+
+  .cta-band__btn:hover .arrow {
+    transform: translateX(3px);
+  }
+</style>

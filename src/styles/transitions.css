@@ -1,0 +1,82 @@
+/* ==========================================================================
+   PAGE TRANSITIONS — a Pine curtain with the Sage ~ mark.
+   (2026-06 design port; controller in src/scripts/transitions.js, armed by
+   the inline <head> script in BaseLayout.)
+
+   Drawn with <html> pseudo-elements so the cover is painted on the VERY
+   FIRST frame of a navigation — there is no moment where real content shows
+   and then gets covered.
+
+   The curtain only appears for navigations WITHIN the site, gated by two
+   classes set on <html>:
+     · rw-arrive  — set (before first paint) when you arrive from another
+                    in-site page; the curtain covers, then lifts up and off.
+     · rw-leaving — set on an internal link click; the curtain rises from the
+                    bottom to cover, then navigation happens.
+   A fresh landing (typed URL, external referrer) gets neither class, so the
+   page just appears with no curtain at all.
+   ========================================================================== */
+
+/* Shared panel + mark, present only while a transition class is on <html> */
+html.rw-arrive::before,
+html.rw-leaving::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-curtain);
+  background: var(--pine);
+  pointer-events: none;
+}
+
+html.rw-arrive::after,
+html.rw-leaving::after {
+  content: "~";
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-curtain) + 1);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: clamp(3rem, 9vw, 6rem);
+  line-height: 1;
+  color: var(--sage);
+  pointer-events: none;
+}
+
+/* ARRIVE — covering at first paint, then lifts up and off the top */
+html.rw-arrive::before { animation: rw-arrive-panel var(--dur-curtain-arrive) var(--ease-curtain) forwards; }
+html.rw-arrive::after  { animation: rw-arrive-mark  var(--dur-curtain-arrive) ease forwards; }
+
+/* LEAVE — rises from the bottom to cover (controller then navigates) */
+html.rw-leaving::before { animation: rw-leave-panel var(--dur-curtain-leave) var(--ease-curtain) forwards; }
+html.rw-leaving::after  { animation: rw-leave-mark  var(--dur-curtain-leave) ease forwards; }
+
+@keyframes rw-arrive-panel {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-101%); }
+}
+@keyframes rw-arrive-mark {
+  0%   { opacity: 1; transform: translateY(0); }
+  55%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-14px); }
+}
+@keyframes rw-leave-panel {
+  from { transform: translateY(101%); }
+  to   { transform: translateY(0); }
+}
+@keyframes rw-leave-mark {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Safety: once the arrive should have finished, the controller adds
+   .rw-arrived to force the curtain hidden with no animation — so a throttled
+   or frozen tab can never stay covered. Suppressed during a leave. */
+html.rw-arrived.rw-arrive:not(.rw-leaving)::before { animation: none; transform: translateY(-101%); }
+html.rw-arrived.rw-arrive:not(.rw-leaving)::after  { animation: none; opacity: 0; }
+
+/* Reduced motion — no curtain at all; navigation stays instant. */
+@media (prefers-reduced-motion: reduce) {
+  html.rw-arrive::before,  html.rw-arrive::after,
+  html.rw-leaving::before, html.rw-leaving::after { display: none !important; }
+}

@@ -1,0 +1,121 @@
+---
+/**
+ * Background mood video (2026-06 design port) — generalizes the old
+ * HeroVideo to any section. The video is a MOOD LAYER, never the focal
+ * point: it fades to its `maxOpacity` cap, and the section that mounts it
+ * owns the scrim that keeps text AA over any frame (caps above 0.5 make the
+ * scrim the legibility mechanism — see tokens.css §7).
+ *
+ * Behavior (from the approved comps):
+ *  - reveals the moment a frame is decoded (loadeddata/canplay), so footage
+ *    is already on screen when the arrival curtain lifts — no late fade
+ *  - native loop; muted; playsinline
+ *  - `lazy`: preload="none", src swapped in ~1 viewport early by an
+ *    IntersectionObserver, paused while off-screen — below-fold ambients
+ *    cost nothing on initial load
+ *  - prefers-reduced-motion: never plays. Eager videos show their poster /
+ *    first frame at the cap; lazy ambients never load at all.
+ *
+ * maxOpacity values are named decisions in tokens.css (--video-max-*) —
+ * pass the matching number, don't invent new caps per page.
+ */
+interface Props {
+  src: string;
+  poster?: string;
+  maxOpacity?: number;
+  lazy?: boolean;
+  class?: string;
+}
+
+const { src, poster, maxOpacity = 0.5, lazy = false, class: className } = Astro.props;
+---
+
+<video
+  class:list={['bg-video', className]}
+  data-max={String(maxOpacity)}
+  src={lazy ? undefined : src}
+  data-lazy-src={lazy ? src : undefined}
+  poster={poster}
+  muted
+  loop
+  playsinline
+  autoplay={!lazy}
+  preload={lazy ? 'none' : 'auto'}
+  aria-hidden="true"></video>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const arm = (v: HTMLVideoElement, max: string) => {
+    const reveal = () => {
+      v.style.opacity = max;
+    };
+    // Reveal the instant a frame is actually decoded — this nearly always
+    // happens WHILE the arrival curtain still covers the page, so the footage
+    // is already there when the curtain lifts (waiting on "playing" caused a
+    // visible late fade).
+    if (v.readyState >= 2) {
+      reveal();
+    } else {
+      v.addEventListener('loadeddata', reveal, { once: true });
+      v.addEventListener('canplay', reveal, { once: true });
+    }
+    v.addEventListener('playing', reveal, { once: true }); // safety net
+    const p = v.play();
+    if (p && p.catch) p.catch(() => {});
+  };
+
+  const init = (v: HTMLVideoElement) => {
+    const max = v.dataset.max || '0.5';
+    const lazySrc = v.dataset.lazySrc;
+
+    if (reduce) {
+      if (lazySrc) return; // ambient layers simply don't appear
+      v.removeAttribute('autoplay');
+      v.style.transition = 'none';
+      try {
+        v.pause();
+      } catch {
+        /* not playing yet */
+      }
+      v.style.opacity = max; // static poster / first frame at the cap
+      return;
+    }
+
+    if (!lazySrc) {
+      arm(v, max);
+      return;
+    }
+
+    // Lazy ambient: load ~1 viewport early, pause while off-screen.
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            if (!v.getAttribute('src')) v.src = lazySrc;
+            arm(v, max);
+          } else if (v.getAttribute('src') && !v.paused) {
+            v.pause();
+          }
+        });
+      },
+      { rootMargin: '100% 0px' }
+    );
+    io.observe(v);
+  };
+
+  document.querySelectorAll<HTMLVideoElement>('video.bg-video').forEach(init);
+
+  // Battery courtesy: still videos in hidden tabs, resume on return.
+  document.addEventListener('visibilitychange', () => {
+    document.querySelectorAll<HTMLVideoElement>('video.bg-video').forEach((v) => {
+      if (!v.getAttribute('src') || reduce) return;
+      if (document.hidden) {
+        v.pause();
+      } else {
+        const p = v.play();
+        if (p && p.catch) p.catch(() => {});
+      }
+    });
+  });
+</script>

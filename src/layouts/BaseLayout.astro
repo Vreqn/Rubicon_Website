@@ -2,12 +2,16 @@
 /**
  * Page shell: fonts, tokens, SEO head, header/footer, surface.
  * `surface` sets the page's base surface; sections override locally.
+ * `headerOverlay` floats a transparent header over the page's video hero
+ * (2026-06 design port) — pages without a full-bleed hero keep the default
+ * static header.
  */
 import '@fontsource/space-grotesk/400.css';
 import '@fontsource/space-grotesk/500.css';
 import '@fontsource/jetbrains-mono/400.css';
 import '../styles/tokens.css';
 import '../styles/global.css';
+import '../styles/transitions.css';
 
 import Seo from '../components/Seo.astro';
 import Header from '../components/Header.astro';
@@ -17,13 +21,14 @@ interface Props {
   title: string;
   description: string;
   surface?: 'dark' | 'light' | 'forest';
+  headerOverlay?: boolean;
   ogImage?: string;
   ogType?: 'website' | 'article';
   noindex?: boolean;
   jsonLd?: Record<string, unknown>;
 }
 
-const { title, description, surface = 'dark', ...seo } = Astro.props;
+const { title, description, surface = 'dark', headerOverlay = false, ...seo } = Astro.props;
 ---
 
 <!doctype html>
@@ -31,6 +36,17 @@ const { title, description, surface = 'dark', ...seo } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      /* Before first paint: mark JS available (gates the scroll-reveal hidden
+         state) and arm the page-transition arrival curtain ONLY when coming
+         from another in-site page — so there is no flash. */
+      document.documentElement.classList.add('js');
+      try {
+        if (sessionStorage.getItem('rw-xover') === '1')
+          document.documentElement.classList.add('rw-arrive');
+        sessionStorage.removeItem('rw-xover');
+      } catch (e) {}
+    </script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -40,10 +56,14 @@ const { title, description, surface = 'dark', ...seo } = Astro.props;
   </head>
   <body data-surface={surface}>
     <a class="skip-link" href="#main">Skip to content</a>
-    <Header />
+    <Header overlay={headerOverlay} />
     <main id="main">
       <slot />
     </main>
     <Footer />
+    <script>
+      import '../scripts/transitions.js';
+      import '../scripts/reveal.js';
+    </script>
   </body>
 </html>

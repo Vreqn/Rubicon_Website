@@ -4,14 +4,26 @@
  * Lockup = mark + Space Grotesk text. NOTE: the real wordmark is not
  * finalized (brand v0.2); this text treatment is the labeled placeholder —
  * see Content-Decisions.md #6.
+ *
+ * `overlay` (2026-06 design port): transparent, floated over a page's
+ * full-bleed video hero. Static mode (default) keeps the hairline rule for
+ * pages without a hero (404, thanks, blog).
+ *
+ * The comps drop the nav entirely below 768px — that's a regression we
+ * don't port; the hamburger stays.
  */
 import Logo from './Logo.astro';
 
+interface Props {
+  overlay?: boolean;
+}
+
+const { overlay = false } = Astro.props;
+
 const nav = [
   { href: '/services/', label: 'Services' },
-  { href: '/work/', label: 'Case Studies' },
+  { href: '/work/', label: 'Work' },
   { href: '/about/', label: 'About' },
-  { href: '/contact/', label: 'Contact' },
   // Blog hidden for now — pages still build; re-add when ready.
 ];
 
@@ -19,10 +31,10 @@ const current = Astro.url.pathname;
 const isActive = (href: string) => current === href || (href !== '/' && current.startsWith(href));
 ---
 
-<header data-surface="dark" class="site-header">
-  <div class="container site-header__inner">
+<header data-surface="dark" class:list={['site-header', { 'site-header--overlay': overlay }]}>
+  <div class="site-header__inner">
     <a href="/" class="site-header__brand" aria-label="Rubicon Workflows — home">
-      <Logo size={34} />
+      <Logo size={38} />
       <span class="site-header__name">Rubicon Workflows</span>
     </a>
 
@@ -46,10 +58,17 @@ const isActive = (href: string) => current === href || (href !== '/' && current.
             <a href={href} aria-current={isActive(href) ? 'page' : undefined}>{label}</a>
           </li>
         ))}
+        <li>
+          <a
+            class="site-header__cta"
+            href="/contact/"
+            aria-current={isActive('/contact/') ? 'page' : undefined}>Contact</a
+          >
+        </li>
       </ul>
     </nav>
   </div>
-  <div class="site-header__rule" aria-hidden="true"></div>
+  {!overlay && <div class="site-header__rule" aria-hidden="true" />}
 </header>
 
 <script>
@@ -70,12 +89,23 @@ const isActive = (href: string) => current === href || (href !== '/' && current.
     z-index: var(--z-header);
   }
 
+  .site-header--overlay {
+    position: absolute;
+    inset: 0 0 auto 0;
+    background: transparent;
+  }
+
   .site-header__inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-6);
-    padding-block: var(--space-4);
+    padding: var(--space-4) var(--container-pad);
+    max-width: none;
+  }
+
+  .site-header--overlay .site-header__inner {
+    padding-block: var(--space-8);
   }
 
   .site-header__brand {
@@ -83,6 +113,7 @@ const isActive = (href: string) => current === href || (href !== '/' && current.
     align-items: center;
     gap: var(--space-3);
     text-decoration: none;
+    color: var(--fg);
   }
 
   .site-header__brand:hover {
@@ -91,7 +122,7 @@ const isActive = (href: string) => current === href || (href !== '/' && current.
 
   .site-header__name {
     font-weight: 500;
-    font-size: var(--text-body-l);
+    font-size: var(--text-h3);
     letter-spacing: var(--track-h3);
     white-space: nowrap;
   }
@@ -103,7 +134,8 @@ const isActive = (href: string) => current === href || (href !== '/' && current.
 
   .site-header__nav ul {
     display: flex;
-    gap: var(--space-6);
+    align-items: center;
+    gap: var(--space-8);
     list-style: none;
     margin: 0;
     padding: 0;
@@ -111,16 +143,34 @@ const isActive = (href: string) => current === href || (href !== '/' && current.
 
   .site-header__nav a {
     text-decoration: none;
-    color: var(--muted);
-    transition: color var(--dur-fast) var(--ease);
+    color: var(--fg);
+    font-size: var(--text-body-s);
+    letter-spacing: 0.01em;
+    opacity: 0.82;
+    transition:
+      color var(--dur-fast) var(--ease),
+      opacity var(--dur-fast) var(--ease);
   }
 
   .site-header__nav a:hover {
-    color: var(--fg);
+    color: var(--accent-text);
+    opacity: 1;
   }
 
   .site-header__nav a[aria-current='page'] {
     color: var(--accent);
+    opacity: 1;
+  }
+
+  .site-header__cta {
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-full);
+    opacity: 1 !important;
+  }
+
+  .site-header__cta:hover {
+    border-color: var(--accent);
   }
 
   .site-header__toggle {
@@ -153,6 +203,7 @@ const isActive = (href: string) => current === href || (href !== '/' && current.
 
     .site-header__nav ul {
       flex-direction: column;
+      align-items: stretch;
       gap: 0;
       padding: var(--space-2) var(--container-pad) var(--space-4);
     }
@@ -161,6 +212,11 @@ const isActive = (href: string) => current === href || (href !== '/' && current.
       display: block;
       padding: var(--space-3) 0;
       font-size: var(--text-body-l);
+    }
+
+    .site-header__cta {
+      border: none;
+      padding: var(--space-3) 0;
     }
   }
 </style>

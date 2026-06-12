@@ -97,8 +97,10 @@
   --space-2: 0.5rem;   /*   8px */
   --space-3: 0.75rem;  /*  12px */
   --space-4: 1rem;     /*  16px */
+  --space-5: 1.25rem;  /*  20px */
   --space-6: 1.5rem;   /*  24px */
   --space-8: 2rem;     /*  32px */
+  --space-10: 2.5rem;  /*  40px */
   --space-12: 3rem;    /*  48px */
   --space-16: 4rem;    /*  64px */
   --space-24: 6rem;    /*  96px */
@@ -128,9 +130,38 @@
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --dur-fast: 150ms;
   --dur-base: 250ms;
-  --dur-fade: 500ms; /* hero video fade in/out */
+  --dur-fade: 500ms; /* background video fade-in to its cap */
+
+  /* Page-transition curtain (2026-06 design port). transitions.js keeps
+     hard-coded failsafe timeouts (620ms leave / 1300ms arrive) that must
+     outlast these durations — change them together. */
+  --dur-curtain-arrive: 720ms;
+  --dur-curtain-leave: 480ms;
+  --ease-curtain: cubic-bezier(0.76, 0, 0.24, 1);
+
+  /* Scroll reveal */
+  --dur-reveal: 700ms;
+  --reveal-shift: 18px;
+
+  /* 3D tilt (case-study cards) */
+  --tilt-max: 18deg;
+  --ease-settle: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-tilt-follow: 160ms;
+  --dur-tilt-settle: 240ms;
+
+  /* Background-video opacity caps — one named decision per role. With caps
+     above 0.5 the section's SCRIM is the AA mechanism for text over footage;
+     any page using these must verify contrast against worst-case frames. */
+  --video-max-hero: 1;       /* homepage hero (immersive scrim carries AA) */
+  --video-max-page: 0.85;    /* interior page heroes (about, work) */
+  --video-max-services: 0.9; /* services page hero */
+  --video-max-contact: 0.6;  /* contact page hero (quiet) */
+  --video-max-ambient: 0.35; /* in-section mood layers under heavy scrims */
+
   --z-header: 10;
   --z-skip: 100;
+  --z-modal: 1000;   /* case-study reader */
+  --z-curtain: 9000; /* page-transition curtain (top of everything) */
 }
 
 /* ==========================================================================

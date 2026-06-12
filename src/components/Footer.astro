@@ -1,13 +1,17 @@
 ---
 /**
  * Site footer — dark, with the brand-signature tilde flourish.
+ * 2026-06 design port: brand blurb + Sitemap / Connect columns.
+ * Email stays krisztian@ (Content-Decisions #2 — the comps' hello@ is an
+ * owner option, not resolved). The @handle has no real URL yet, so it
+ * renders as text, never a dead link.
  */
 const year = new Date().getFullYear();
 const email = 'krisztian@rubiconworkflows.ca';
 
 const nav = [
   { href: '/services/', label: 'Services' },
-  { href: '/work/', label: 'Case Studies' },
+  { href: '/work/', label: 'Work' },
   { href: '/about/', label: 'About' },
   { href: '/contact/', label: 'Contact' },
   // Blog hidden for now — pages still build; re-add when ready.
@@ -15,107 +19,113 @@ const nav = [
 ---
 
 <footer data-surface="dark" class="site-footer">
-  <div class="container">
-    <div class="site-footer__flourish" aria-hidden="true">~</div>
-
-    <div class="site-footer__cols">
-      <div>
-        <p class="site-footer__name">Rubicon Workflows</p>
-        <p class="site-footer__tagline">Automate the routine, focus on the results.</p>
-      </div>
-
-      <nav aria-label="Footer">
-        <ul>
-          {nav.map(({ href, label }) => (
-            <li><a href={href}>{label}</a></li>
-          ))}
-        </ul>
-      </nav>
-
-      <div class="site-footer__contact">
-        <p class="site-footer__mono">@rubiconworkflows</p>
-        <p><a class="site-footer__email" href={`mailto:${email}`}>{email}</a></p>
-      </div>
+  <div class="site-footer__inner">
+    <div class="site-footer__brand">
+      <span class="site-footer__tilde" aria-hidden="true">~</span>
+      <p>
+        Rubicon Workflows &mdash; automation consultancy, Vancouver BC. We find the manual work
+        eating your hours and automate it, one bottleneck at a time.
+      </p>
     </div>
 
-    <p class="site-footer__legal">&copy; {year} Rubicon Workflows &middot; Vancouver, BC</p>
+    <div class="site-footer__cols">
+      <nav class="site-footer__col" aria-label="Footer">
+        <span class="site-footer__head">Sitemap</span>
+        {nav.map(({ href, label }) => <a href={href}>{label}</a>)}
+      </nav>
+      <div class="site-footer__col">
+        <span class="site-footer__head">Connect</span>
+        <a href={`mailto:${email}`}>{email}</a>
+        <span class="site-footer__handle">@rubiconworkflows</span>
+      </div>
+    </div>
   </div>
+  <p class="site-footer__legal">&copy; {year} Rubicon Workflows &middot; Vancouver, BC</p>
 </footer>
 
 <style>
   .site-footer {
-    padding-block: var(--space-12) var(--space-8);
     border-top: 1px solid var(--line);
+    padding: var(--space-16) 0 var(--space-8);
   }
 
-  .site-footer__flourish {
+  .site-footer__inner {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--container-pad);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-12);
+    flex-wrap: wrap;
+  }
+
+  .site-footer__brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-width: 22rem;
+  }
+
+  .site-footer__tilde {
     font-family: var(--font-mono);
-    color: var(--accent);
-    font-size: var(--text-h2);
-    margin-bottom: var(--space-8);
+    font-size: var(--text-h1);
+    line-height: 1;
+    color: var(--accent-text);
+  }
+
+  .site-footer__brand p {
+    margin: 0;
+    font-size: var(--text-body-s);
+    line-height: var(--lh-body-s);
+    color: var(--muted);
   }
 
   .site-footer__cols {
     display: flex;
+    gap: var(--space-24);
     flex-wrap: wrap;
-    gap: var(--space-12);
-    justify-content: space-between;
   }
 
-  .site-footer__name {
-    font-weight: 500;
-  }
-
-  .site-footer__tagline {
-    color: var(--muted);
-    margin-top: var(--space-1);
-    font-size: var(--text-body-s);
-    line-height: var(--lh-body-s);
-  }
-
-  .site-footer nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  .site-footer__col {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-4) var(--space-6);
+    flex-direction: column;
+    gap: var(--space-3);
   }
 
-  .site-footer nav a {
-    text-decoration: none;
-    color: var(--muted);
-  }
-
-  .site-footer nav a:hover {
-    color: var(--fg);
-  }
-
-  .site-footer__contact {
-    text-align: right;
-  }
-
-  .site-footer__mono {
+  .site-footer__head {
     font-family: var(--font-mono);
-    font-size: var(--text-mono-inline);
+    font-size: var(--text-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    text-transform: uppercase;
     color: var(--accent-2);
+    margin-bottom: var(--space-1);
   }
 
-  .site-footer__email {
-    display: inline-block;
-    margin-top: var(--space-1);
-    font-family: var(--font-mono);
-    font-size: var(--text-mono-inline);
-    color: var(--muted);
-    text-decoration: none;
-  }
-
-  .site-footer__email:hover {
+  .site-footer__col a {
+    font-size: var(--text-body-s);
     color: var(--fg);
+    text-decoration: none;
+    opacity: 0.82;
+    transition:
+      color var(--dur-fast) var(--ease),
+      opacity var(--dur-fast) var(--ease);
+  }
+
+  .site-footer__col a:hover {
+    color: var(--accent-text);
+    opacity: 1;
+  }
+
+  .site-footer__handle {
+    font-size: var(--text-body-s);
+    color: var(--muted);
   }
 
   .site-footer__legal {
-    margin-top: var(--space-12);
+    max-width: var(--container-max);
+    margin: var(--space-12) auto 0;
+    padding: 0 var(--container-pad);
     font-size: var(--text-caption);
     line-height: var(--lh-caption);
     color: var(--muted);
@@ -123,12 +133,7 @@ const nav = [
 
   @media (max-width: 767.98px) {
     .site-footer__cols {
-      flex-direction: column;
-      gap: var(--space-8);
-    }
-
-    .site-footer__contact {
-      text-align: left;
+      gap: var(--space-12);
     }
   }
 </style>
