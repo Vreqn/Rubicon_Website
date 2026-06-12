@@ -1,9 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Section from '../components/Section.astro';
-import Eyebrow from '../components/Eyebrow.astro';
+import PageHero from '../components/PageHero.astro';
 import ContactForm from '../components/ContactForm.astro';
 
+// Email stays krisztian@ (resolved Content-Decisions #2); the comps' hello@
+// is logged as an owner option. The @handle has no real URL — text only.
 const email = 'krisztian@rubiconworkflows.ca';
 ---
 
@@ -11,95 +12,205 @@ const email = 'krisztian@rubiconworkflows.ca';
   title="Rubicon Workflows | Contact — Automation Help in Vancouver"
   description="Tell us about the task that's eating your team's hours. Plain answers from a Vancouver automation consultancy — no pressure, no jargon."
   surface="light"
+  headerOverlay
 >
-  <!-- Dark intro strip -->
-  <Section surface="dark">
-    <header class="contact-hero">
-      <Eyebrow>Contact</Eyebrow>
-      <h1 class="contact-hero__title">Tell us what's eating your team's time.</h1>
-      <p class="contact-hero__lede">
-        Describe the task in your own words — no technical detail needed. We'll tell you,
-        plainly, whether it's worth automating and what starting small would look like.
-      </p>
-    </header>
-  </Section>
+  <PageHero
+    eyebrow="Contact"
+    title="Tell us where the hours go."
+    lede="One note, read by both of us. Describe the task your team dreads — the Friday report, the re-keying, the inbox triage — and we’ll tell you whether it’s automatable and what we’d do first. No pitch, no obligation."
+    meta={[email, 'Vancouver BC']}
+    metaLeadAccent
+    videoSrc="/video/glow.mp4"
+    poster="/video/glow-poster.jpg"
+    maxOpacity={0.6}
+    fit="cover"
+    size="short"
+  />
 
-  <!-- Light form section (functional task = readable surface) -->
-  <Section surface="light">
-    <div class="contact-grid">
-      <ContactForm />
-      <aside class="contact-aside">
-        <h2 class="contact-aside__title">Other ways to reach us</h2>
-        <p><a class="contact-aside__mono" href={`mailto:${email}`}>{email}</a></p>
-        <p class="contact-aside__mono contact-aside__handle">@rubiconworkflows</p>
-        <p class="contact-aside__note">Based in Vancouver, BC. We work with businesses across Canada.</p>
+  <!-- The form — light working surface, Forest leads -->
+  <section data-surface="light" class="section contact">
+    <div class="container contact__grid">
+      <div class="contact__main" data-reveal>
+        <ContactForm />
+      </div>
+
+      <aside class="contact__aside" data-reveal style="--reveal-delay: 90ms">
+        <div class="aside-block">
+          <span class="aside-block__head"><span class="tilde" aria-hidden="true">~</span> Prefer email</span>
+          <a class="aside-block__mail" href={`mailto:${email}`}>{email}</a>
+          <p>Goes to the same place as the form &mdash; both our inboxes.</p>
+        </div>
+
+        <div class="aside-block">
+          <span class="aside-block__head"><span class="tilde" aria-hidden="true">~</span> Elsewhere</span>
+          <span class="aside-block__handle">@rubiconworkflows</span>
+        </div>
+
+        <div class="aside-block">
+          <span class="aside-block__head"><span class="tilde" aria-hidden="true">~</span> What happens next</span>
+          <ol class="next-steps">
+            <li>
+              <span class="num">01</span>
+              <span class="what">
+                <strong>A reply from one of us</strong>
+                <span>A person reads it and a person answers it.</span>
+              </span>
+            </li>
+            <li>
+              <span class="num">02</span>
+              <span class="what">
+                <strong>One conversation, both of us</strong>
+                <span>A short call to understand where the hours actually go.</span>
+              </span>
+            </li>
+            <li>
+              <span class="num">03</span>
+              <span class="what">
+                <strong>The first bottleneck, named</strong>
+                <span>We point to the task worth automating first &mdash; whether or not you hire us.</span>
+              </span>
+            </li>
+          </ol>
+        </div>
       </aside>
     </div>
-  </Section>
+  </section>
 </BaseLayout>
 
 <style>
-  .contact-hero {
-    max-width: 46rem;
+  .section {
+    position: relative;
+    padding-block: var(--section-pad);
   }
 
-  .contact-hero__title {
-    margin-top: var(--space-3);
-    font-size: var(--text-display-l);
-    line-height: var(--lh-display-l);
-    letter-spacing: var(--track-display-l);
-  }
-
-  .contact-hero__lede {
-    margin-top: var(--space-6);
-    font-size: var(--text-body-l);
-    line-height: var(--lh-body-l);
-    color: var(--muted);
-  }
-
-  .contact-grid {
+  .contact__grid {
     display: grid;
-    grid-template-columns: minmax(0, 34rem) minmax(14rem, 1fr);
-    gap: var(--space-16);
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.7fr);
+    gap: clamp(3rem, 7vw, 5.5rem);
     align-items: start;
   }
 
-  .contact-aside__title {
-    font-size: var(--text-h3);
-    line-height: var(--lh-h3);
+  /* ---- Aside — the direct routes ---- */
+  .contact__aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+    padding-left: clamp(0rem, 3vw, 2.5rem);
+    border-left: 1px solid var(--line);
   }
 
-  .contact-aside__mono {
-    display: inline-block;
-    margin-top: var(--space-4);
+  .aside-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .aside-block__head {
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    line-height: var(--lh-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .aside-block__head .tilde {
+    color: var(--accent-text);
+  }
+
+  .aside-block__mail {
     font-family: var(--font-mono);
     font-size: var(--text-mono-inline);
-    color: var(--accent);
+    line-height: var(--lh-mono-inline);
+    letter-spacing: 0.02em;
+    color: var(--accent-text);
     text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--forest) 35%, transparent);
+    padding-bottom: 2px;
+    width: fit-content;
   }
 
-  a.contact-aside__mono:hover {
-    text-decoration: underline;
+  .aside-block__mail:hover {
+    border-bottom-color: var(--forest);
+    color: var(--accent-text);
   }
 
-  .contact-aside__handle {
+  .aside-block__handle {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-inline);
+    line-height: var(--lh-mono-inline);
+    letter-spacing: 0.02em;
     color: var(--muted);
   }
 
-  .contact-aside p + p {
-    margin-top: var(--space-3);
-  }
-
-  .contact-aside__note {
-    color: var(--muted);
+  .aside-block p {
+    margin: 0;
     font-size: var(--text-body-s);
     line-height: var(--lh-body-s);
+    color: var(--muted);
+    text-wrap: pretty;
   }
 
-  @media (max-width: 767.98px) {
-    .contact-grid {
+  /* what happens next — three mono-numbered steps */
+  .next-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .next-steps li {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: baseline;
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .next-steps li:first-child {
+    border-top: 1px solid var(--line);
+  }
+
+  .next-steps .num {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-inline);
+    /* not accent-2: on light that's Slate, which fails AA at this size (CD #10) */
+    color: var(--accent-text);
+  }
+
+  .next-steps .what {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .next-steps .what strong {
+    font-size: var(--text-body-m);
+    line-height: var(--lh-body-m);
+    font-weight: 500;
+    color: var(--fg);
+  }
+
+  .next-steps .what span {
+    font-size: var(--text-body-s);
+    line-height: var(--lh-body-s);
+    color: var(--muted);
+  }
+
+  @media (max-width: 1024px) {
+    .contact__grid {
       grid-template-columns: 1fr;
-      gap: var(--space-12);
+      gap: var(--space-16);
+    }
+    .contact__aside {
+      padding-left: 0;
+      border-left: 0;
+      padding-top: var(--space-12);
+      border-top: 1px solid var(--line);
     }
   }
 </style>

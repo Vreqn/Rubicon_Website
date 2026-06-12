@@ -14,6 +14,8 @@
 import BgVideo from './BgVideo.astro';
 
 interface Props {
+  /** Mono kicker above the title (~-prefixed). */
+  eyebrow?: string;
   title: string;
   /** Trailing muted phrase appended to the title (the comp's <em>). */
   titleMuted?: string;
@@ -31,6 +33,7 @@ interface Props {
 }
 
 const {
+  eyebrow,
   title,
   titleMuted,
   lede,
@@ -56,6 +59,13 @@ const {
   />
   <div class="pagehero__scrim" aria-hidden="true"></div>
   <div class="pagehero__inner">
+    {
+      eyebrow && (
+        <p class="pagehero__eyebrow">
+          <span class="tilde" aria-hidden="true">~</span> {eyebrow}
+        </p>
+      )
+    }
     <h1 class="pagehero__title">{title}{titleMuted && <em> {titleMuted}</em>}</h1>
     {lede && <p class="pagehero__lede">{lede}</p>}
     {
@@ -94,7 +104,21 @@ const {
   }
 
   .pagehero--cover.pagehero--short {
-    min-height: clamp(24rem, 52vh, 32rem);
+    min-height: clamp(26rem, 58vh, 38rem);
+  }
+
+  .pagehero__eyebrow {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    line-height: var(--lh-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .pagehero__eyebrow .tilde {
+    color: var(--accent-text);
   }
 
   /* Footage layer — full native frame pinned to the top, bottom feathered so

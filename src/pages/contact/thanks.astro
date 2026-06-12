@@ -1,7 +1,5 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Section from '../../components/Section.astro';
-import Eyebrow from '../../components/Eyebrow.astro';
 import Button from '../../components/Button.astro';
 ---
 
@@ -11,30 +9,56 @@ import Button from '../../components/Button.astro';
   surface="dark"
   noindex
 >
-  <Section surface="dark">
-    <div class="thanks">
-      <Eyebrow>Message received</Eyebrow>
-      <h1 class="thanks__title">Got it — thanks.</h1>
-      <p class="thanks__body">
-        We read every message and reply personally. You'll hear back from us soon, usually
-        within a couple of business days.
-      </p>
-      <Button variant="secondary" href="/">Back to the homepage</Button>
+  <section data-surface="dark" class="thanks-section">
+    <div class="container">
+      <div class="thanks" role="status">
+        <span class="thanks__tilde" aria-hidden="true">~</span>
+        <h1 class="thanks__title">Got it. We&rsquo;ll be in touch.</h1>
+        <p class="thanks__body">
+          Your note lands with both of us, and the reply comes from one of us &mdash; not a
+          sequence. If it&rsquo;s quicker, just answer the email when it arrives.
+        </p>
+        <Button variant="secondary" href="/">Back to the homepage</Button>
+      </div>
     </div>
-  </Section>
+  </section>
 </BaseLayout>
 
 <style>
+  .thanks-section {
+    padding-block: var(--section-pad);
+  }
+
   .thanks {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-4);
     max-width: 38rem;
+    margin: 0 auto;
+    padding: var(--space-16) var(--space-8);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+  }
+
+  .thanks__tilde {
+    font-family: var(--font-mono);
+    font-size: var(--text-display-l);
+    line-height: 1;
+    color: var(--accent-text);
   }
 
   .thanks__title {
-    margin-top: var(--space-3);
+    margin: 0;
+    font-size: var(--text-h1);
+    line-height: var(--lh-h1);
+    letter-spacing: var(--track-h1);
   }
 
   .thanks__body {
-    margin-block: var(--space-4) var(--space-8);
+    margin: 0 0 var(--space-4);
+    max-width: 34rem;
     color: var(--muted);
   }
 </style>
