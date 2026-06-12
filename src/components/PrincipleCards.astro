@@ -1,0 +1,257 @@
+---
+/**
+ * Operating principles — comet cards (2026-06 design port). Bordered 2×2
+ * cards that tilt in 3D toward the cursor with a soft tracking glare; a
+ * per-card lerp spring drives --comet-* custom props each frame. Reduced
+ * motion: the script never runs and the cards stay flat.
+ */
+import Icon from './Icon.astro';
+import type { ComponentProps } from 'astro/types';
+
+const principles: {
+  icon: ComponentProps<typeof Icon>['name'];
+  num: string;
+  title: string;
+  body: string;
+}[] = [
+  {
+    icon: 'target',
+    num: '01',
+    title: 'Automate the routine, not the judgment',
+    body: 'We take the repetitive work off your team’s plate and leave the decisions, the relationships, and the calls that need a person exactly where they belong — with people.',
+  },
+  {
+    icon: 'toolbox',
+    num: '02',
+    title: 'Fit the work you already have',
+    body: 'We build inside the tools you already pay for. No rip-and-replace, no new platform to learn, no overhaul of how your team already works to get there.',
+  },
+  {
+    icon: 'flag',
+    num: '03',
+    title: 'One bottleneck at a time',
+    body: 'No big-bang transformation. We find the highest-friction task, automate it cleanly, prove the hours it saves, and only then move to the next — so the work keeps running the whole way through.',
+  },
+  {
+    icon: 'check-circle',
+    num: '04',
+    title: 'Nothing ships on a guess',
+    body: 'Accuracy is the whole point. We test against your real cases before a single step goes live, and we stay on it afterward — because a process that drifts quietly is worse than no automation at all.',
+  },
+];
+---
+
+<div class="principle-grid" data-comet-grid>
+  {
+    principles.map(({ icon, num, title, body }, i) => (
+      <article class="principle" data-reveal style={`--reveal-delay: ${i * 90}ms`}>
+        <div class="principle__head">
+          <span class="principle__ico">
+            <Icon name={icon} size={26} />
+          </span>
+          <span class="principle__num">{num}</span>
+        </div>
+        <h3>{title}</h3>
+        <p>{body}</p>
+      </article>
+    ))
+  }
+</div>
+
+<style>
+  .principle-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+    perspective: 1100px;
+  }
+
+  .principle {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding: var(--space-8);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    /* OPAQUE (mixed on pine, not transparent): these cards float over the
+       wavelength film, and translucent cards put body text over raw footage —
+       fails AA on bright frames. Visually near-identical on the pine section. */
+    background: color-mix(in srgb, var(--bone) 4%, var(--pine));
+    transition:
+      border-color var(--dur-base) var(--ease),
+      background-color var(--dur-base) var(--ease),
+      box-shadow var(--dur-base) var(--ease);
+  }
+
+  .principle__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .principle__ico {
+    flex: 0 0 auto;
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-md);
+    background: var(--sage-tint-13);
+    color: var(--accent);
+  }
+
+  .principle__num {
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    color: var(--accent-2);
+  }
+
+  .principle h3 {
+    margin: 0;
+    font-size: var(--text-h2);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--track-h2);
+    font-weight: 500;
+    color: var(--fg);
+  }
+
+  .principle p {
+    margin: 0;
+    font-size: var(--text-body-m);
+    line-height: var(--lh-body-m);
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  /* ---- comet state (armed by the script adding .is-comet) ---- */
+  .principle.is-comet {
+    position: relative;
+    transform: rotateX(var(--comet-rx, 0deg)) rotateY(var(--comet-ry, 0deg))
+      translate3d(var(--comet-tx, 0px), var(--comet-ty, 0px), 0) scale(var(--comet-sc, 1));
+    /* tilt is spring-smoothed in JS frame-by-frame, so no transform transition.
+       No will-change either: the browser re-rasterizes at the scaled size each
+       frame so text stays crisp instead of blurring a cached bitmap. */
+  }
+
+  /* card content rides above the glare via plain stacking — no 3D transform
+     on the text, which would soften it under perspective */
+  .principle.is-comet > :not(.comet-glare) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .principle :global(.comet-glare) {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      circle at var(--comet-gx, 50%) var(--comet-gy, 50%),
+      color-mix(in srgb, var(--bone) 32%, transparent),
+      transparent 48%
+    );
+    mix-blend-mode: soft-light;
+    transition: opacity var(--dur-base) var(--ease);
+    z-index: 2;
+  }
+
+  .principle.is-comet.is-lit {
+    border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+    background: color-mix(in srgb, var(--bone) 6%, var(--pine));
+    box-shadow: 0 24px 50px -28px color-mix(in srgb, var(--pine) 80%, transparent);
+  }
+
+  .principle.is-comet.is-lit :global(.comet-glare) {
+    opacity: 0.32;
+  }
+
+  @media (max-width: 768px) {
+    .principle-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // Comet cards — vanilla port of the comet-card interaction: a per-card
+  // lerp spring drives --comet-* custom props each frame.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const grid = document.querySelector<HTMLElement>('[data-comet-grid]');
+
+  if (grid && !reduce) {
+    const ROT = 9; // max tilt, degrees
+    const TRANS = 9; // max parallax shift, px
+    const SCALE = 1.02; // hover scale
+    const LERP = 0.16; // spring stiffness (0..1)
+    const KEYS = ['rx', 'ry', 'tx', 'ty', 'sc', 'gx', 'gy'] as const;
+    type State = Record<(typeof KEYS)[number], number>;
+
+    let raf: number | null = null;
+
+    const states = Array.from(grid.querySelectorAll<HTMLElement>('.principle')).map((card) => {
+      card.classList.add('is-comet');
+      const glare = document.createElement('div');
+      glare.className = 'comet-glare';
+      glare.setAttribute('aria-hidden', 'true');
+      card.appendChild(glare);
+
+      const rest: State = { rx: 0, ry: 0, tx: 0, ty: 0, sc: 1, gx: 50, gy: 50 };
+      const st = { card, cur: { ...rest }, tgt: { ...rest } };
+
+      card.addEventListener('pointermove', (e) => {
+        const r = card.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        st.tgt.rx = py * 2 * ROT; // tilt the edge nearest the cursor forward
+        st.tgt.ry = -px * 2 * ROT;
+        st.tgt.tx = px * 2 * TRANS;
+        st.tgt.ty = py * 2 * TRANS;
+        st.tgt.sc = SCALE;
+        st.tgt.gx = (px + 0.5) * 100;
+        st.tgt.gy = (py + 0.5) * 100;
+        card.classList.add('is-lit');
+        start();
+      });
+
+      const settle = () => {
+        Object.assign(st.tgt, rest);
+        card.classList.remove('is-lit');
+        start();
+      };
+      card.addEventListener('pointerleave', settle);
+      card.addEventListener('blur', settle, true);
+      return st;
+    });
+
+    const tick = () => {
+      let moving = false;
+      states.forEach((st) => {
+        const c = st.cur;
+        const t = st.tgt;
+        let d = 0;
+        KEYS.forEach((k) => {
+          c[k] += (t[k] - c[k]) * LERP;
+          d += Math.abs(t[k] - c[k]) * (k === 'sc' ? 80 : 1);
+        });
+        if (d > 0.06) moving = true;
+        else KEYS.forEach((k) => (c[k] = t[k]));
+        const s = st.card.style;
+        s.setProperty('--comet-rx', `${c.rx.toFixed(3)}deg`);
+        s.setProperty('--comet-ry', `${c.ry.toFixed(3)}deg`);
+        s.setProperty('--comet-tx', `${c.tx.toFixed(3)}px`);
+        s.setProperty('--comet-ty', `${c.ty.toFixed(3)}px`);
+        s.setProperty('--comet-sc', c.sc.toFixed(4));
+        s.setProperty('--comet-gx', `${c.gx.toFixed(2)}%`);
+        s.setProperty('--comet-gy', `${c.gy.toFixed(2)}%`);
+      });
+      raf = moving ? requestAnimationFrame(tick) : null;
+    };
+
+    const start = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+  }
+</script>

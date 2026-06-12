@@ -1,85 +1,295 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Section from '../components/Section.astro';
+import PageHero from '../components/PageHero.astro';
 import Eyebrow from '../components/Eyebrow.astro';
-import Todo from '../components/Todo.astro';
+import PrincipleCards from '../components/PrincipleCards.astro';
+import MethodAccordion from '../components/MethodAccordion.astro';
+import StanceLedger from '../components/StanceLedger.astro';
+import BgVideo from '../components/BgVideo.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+// Founders copy (names, roles, "two people" narrative) is a real-world
+// claim from the design comp — Content-Decisions #4 updated for Krisztian
+// to confirm exact wording.
 ---
 
 <BaseLayout
   title="Rubicon Workflows | About — Vancouver Automation Partner"
-  description="A small, owner-led Vancouver automation consultancy. We solve real bottlenecks one step at a time, inside the tools you already use."
-  surface="light"
+  description="Rubicon Workflows is two people who find the manual work eating your team's hours and automate it — one bottleneck at a time. Vancouver, BC."
+  surface="dark"
+  headerOverlay
 >
-  <!-- Forest hero — the brand-signature surface (brand doc: About page hero = Forest) -->
-  <Section surface="forest">
-    <header class="about-hero">
-      <Eyebrow>About us</Eyebrow>
-      <h1 class="about-hero__title">A small shop that solves real bottlenecks.</h1>
-      <p class="about-hero__lede">
-        For owner-led businesses with established operations, Rubicon Workflows is the
-        automation partner that solves real bottlenecks one step at a time — because
-        compounding small wins beats reinventing the system.
-      </p>
-    </header>
-  </Section>
+  <PageHero
+    title="A small practice, on purpose."
+    lede="Rubicon is two people who find the manual work eating your team’s hours and automate it — one bottleneck at a time, inside the tools you already use. No platform to sell, no transformation to survive."
+    meta={['Krisztian & Attila Kadar', 'Co-founders', 'Vancouver BC']}
+    metaLeadAccent
+    videoSrc="/video/about-hero.mp4"
+    poster="/video/about-hero-poster.jpg"
+    maxOpacity={0.85}
+    fit="cover"
+    size="tall"
+  />
 
-  <!-- Light body — reading surface -->
-  <Section surface="light">
-    <div class="prose">
-      <h2>What we do</h2>
-      <p>
-        You know how every business has tasks that just eat hours — the weekly reports, the
-        data entry, the back-and-forth between systems? We find those parts of your operation
-        and automate them, so your team can focus on the work that actually matters. We work
-        inside whatever systems you already use, starting with one bottleneck and building
-        from there.
-      </p>
-      <p>
-        The name's intentional — once you cross the Rubicon on a workflow, you don't go back
-        to doing it the old way.
-      </p>
-
-      <h2>Who we work with</h2>
-      <p>
-        Small-to-mid-sized businesses — roughly 15 to 200 people — where the workflow we're
-        automating impacts a team, not just an individual. Scale of impact matters more than
-        size of company: a 15-person company where 10 people share the same workflow is a
-        strong fit. Our clients are owner-operated companies in fields like construction,
-        manufacturing, and strata management.
-      </p>
-
-      <h2>How we think about AI</h2>
-      <p>
-        We use AI when it's the right tool, not because it's a selling point. Many of our
-        automations use deterministic code, API integrations, or scripted logic — often
-        better than AI because they're predictable and don't hallucinate. When we do use AI,
-        we say so plainly. When we don't, we don't pretend we do.
-      </p>
-
-      <h2>Who's behind it</h2>
-      <p>
-        <Todo label="short 'who we are' paragraph — Krisztian to supply exact text (Content-Decisions #4)" />
-      </p>
+  <!-- Founders — the real people, named. No invented bios, no headshots. -->
+  <section data-surface="dark" class="section intro">
+    <div class="container intro__inner">
+      <div class="intro__head" data-reveal>
+        <Eyebrow>Who you&rsquo;ll work with</Eyebrow>
+        <h2>Rubicon is the two of us.</h2>
+      </div>
+      <div class="intro__aside" data-reveal style="--reveal-delay: 80ms">
+        <p class="intro__lede">
+          No account managers, no hand-off to a junior you never met. When you work with
+          Rubicon you work with the two people whose names are on it &mdash; from the first
+          scoping call to the automation running quietly in the background months later.
+        </p>
+        <div class="signature">
+          <div class="signed">
+            <span class="name">Krisztian Kadar</span>
+            <span class="role">Co-founder</span>
+          </div>
+          <div class="signed">
+            <span class="name">Attila Kadar</span>
+            <span class="role">Co-founder</span>
+          </div>
+        </div>
+      </div>
     </div>
-  </Section>
+  </section>
+
+  <!-- How we think — comet cards over the wavelength film -->
+  <section data-surface="dark" class="section principles">
+    <BgVideo src="/video/wavelength.mp4" maxOpacity={0.85} lazy class="principles-video" />
+    <div class="principles-veil" aria-hidden="true"></div>
+    <div class="container principles__inner">
+      <div class="shead" data-reveal>
+        <h2>How we think.</h2>
+        <p class="shead__lede">
+          A short list of beliefs that decide what we build, what we don&rsquo;t, and how we
+          leave a team better than we found it.
+        </p>
+      </div>
+      <PrincipleCards />
+    </div>
+  </section>
+
+  <!-- The method — living index accordion -->
+  <section data-surface="dark" class="section method">
+    <div class="container">
+      <div class="shead" data-reveal>
+        <Eyebrow>The method</Eyebrow>
+        <h2>How we actually work.</h2>
+        <p class="shead__lede">
+          Four steps, every engagement. Small enough to prove before you commit, close enough
+          that it keeps fitting long after.
+        </p>
+      </div>
+      <MethodAccordion />
+    </div>
+  </section>
+
+  <!-- The stance — sticky panel + ledger over the cascade film -->
+  <section data-surface="dark" class="section stance">
+    <BgVideo src="/video/cascade.mp4" maxOpacity={0.7} lazy class="stance-video" />
+    <div class="stance-veil" aria-hidden="true"></div>
+    <div class="container stance__inner">
+      <StanceLedger />
+    </div>
+  </section>
+
+  <CtaBand
+    id="cta"
+    title="Talk to the people who’ll do the work."
+    lede="One conversation, with both of us. We’ll point to the task worth automating first — no pitch, no commitment."
+    ctaLabel="Start the conversation"
+    ctaHref="/contact/"
+  />
 </BaseLayout>
 
 <style>
-  .about-hero {
-    max-width: 46rem;
+  .section {
+    position: relative;
+    padding-block: var(--section-pad);
   }
 
-  .about-hero__title {
-    margin-top: var(--space-3);
+  .shead {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    max-width: 40rem;
+    margin-bottom: var(--space-12);
+  }
+
+  .shead h2 {
+    margin: 0;
+    font-weight: 500;
     font-size: var(--text-display-l);
     line-height: var(--lh-display-l);
     letter-spacing: var(--track-display-l);
+    color: var(--fg);
+    text-wrap: balance;
   }
 
-  .about-hero__lede {
-    margin-top: var(--space-6);
+  .shead__lede {
+    margin: 0;
     font-size: var(--text-body-l);
     line-height: var(--lh-body-l);
     color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  /* ---- Founders intro ---- */
+  .intro__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-16);
+    align-items: start;
+  }
+
+  .intro__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    max-width: 32rem;
+  }
+
+  .intro__head h2 {
+    margin: 0;
+    font-weight: 500;
+    font-size: var(--text-display-l);
+    line-height: var(--lh-display-l);
+    letter-spacing: var(--track-display-l);
+    color: var(--fg);
+    text-wrap: balance;
+  }
+
+  .intro__aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .intro__lede {
+    margin: 0;
+    font-size: var(--text-body-l);
+    line-height: var(--lh-body-l);
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  .signature {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-8);
+    padding-top: var(--space-8);
+  }
+
+  .signed {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .signed .name {
+    font-size: var(--text-h3);
+    line-height: var(--lh-h3);
+    font-weight: 500;
+    letter-spacing: var(--track-h3);
+    color: var(--fg);
+  }
+
+  .signed .role {
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    text-transform: uppercase;
+    color: var(--accent-2);
+  }
+
+  /* ---- Principles: wavelength film under a veil ---- */
+  .principles {
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .principles-veil {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        120% 90% at 50% 42%,
+        color-mix(in srgb, var(--bg) 38%, transparent) 0%,
+        color-mix(in srgb, var(--bg) 68%, transparent) 60%,
+        var(--bg) 100%
+      ),
+      linear-gradient(
+        180deg,
+        var(--bg) 0%,
+        color-mix(in srgb, var(--bg) 48%, transparent) 22%,
+        color-mix(in srgb, var(--bg) 48%, transparent) 78%,
+        var(--bg) 100%
+      );
+  }
+
+  .principles__inner {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ---- Stance: cascade film (4:5 suits the tall section), stronger veil
+     because these rows are reading-dense; edges dissolve to --bg ---- */
+  .stance {
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .stance :global(.stance-video) {
+    /* feather the film's own edges — encoded video often carries a bright
+       artifact row at its very top */
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 80%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 80%, transparent 100%);
+  }
+
+  .stance-veil {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        110% 80% at 28% 30%,
+        color-mix(in srgb, var(--bg) 46%, transparent) 0%,
+        color-mix(in srgb, var(--bg) 72%, transparent) 58%,
+        color-mix(in srgb, var(--bg) 88%, transparent) 100%
+      ),
+      linear-gradient(
+        180deg,
+        var(--bg) 0%,
+        color-mix(in srgb, var(--bg) 56%, transparent) 24%,
+        color-mix(in srgb, var(--bg) 56%, transparent) 80%,
+        var(--bg) 100%
+      );
+  }
+
+  .stance__inner {
+    position: relative;
+    z-index: 2;
+  }
+
+  @media (max-width: 1024px) {
+    .intro__inner {
+      grid-template-columns: 1fr;
+      gap: var(--space-10);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .signature {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
   }
 </style>

@@ -24,6 +24,10 @@ interface Props {
   poster?: string;
   maxOpacity?: number;
   fit?: 'frame' | 'cover';
+  /** Cover-fit hero height: tall (about) or short (contact). */
+  size?: 'tall' | 'short';
+  /** Render the first meta item in the accent text color (about: the names). */
+  metaLeadAccent?: boolean;
 }
 
 const {
@@ -35,10 +39,15 @@ const {
   poster,
   maxOpacity = 0.85,
   fit = 'frame',
+  size = 'tall',
+  metaLeadAccent = false,
 } = Astro.props;
 ---
 
-<section data-surface="dark" class:list={['pagehero', `pagehero--${fit}`]}>
+<section
+  data-surface="dark"
+  class:list={['pagehero', `pagehero--${fit}`, fit === 'cover' && `pagehero--${size}`]}
+>
   <BgVideo
     src={videoSrc}
     poster={poster}
@@ -55,7 +64,7 @@ const {
           {meta.map((m, i) => (
             <>
               {i > 0 && <span class="sep" aria-hidden="true">/</span>}
-              <span>{m}</span>
+              <span class:list={[{ lead: metaLeadAccent && i === 0 }]}>{m}</span>
             </>
           ))}
         </p>
@@ -78,6 +87,14 @@ const {
      56.25vw at 100% width) so nothing is clipped. */
   .pagehero--frame {
     min-height: 56.25vw;
+  }
+
+  .pagehero--cover.pagehero--tall {
+    min-height: clamp(34rem, 76vh, 48rem);
+  }
+
+  .pagehero--cover.pagehero--short {
+    min-height: clamp(24rem, 52vh, 32rem);
   }
 
   /* Footage layer — full native frame pinned to the top, bottom feathered so
@@ -169,21 +186,25 @@ const {
     color: var(--muted);
   }
 
+  .pagehero__meta .lead {
+    color: var(--accent-text);
+  }
+
   .pagehero__meta .sep {
     color: var(--line);
   }
 
-  /* On small screens the frame-fit footage is a short strip sitting right
-     behind the title where the desktop radial doesn't reach — carry AA with
-     a heavier top band instead. */
+  /* On small screens the copy block runs much deeper down the hero (and the
+     cover-fit footage can be bright sky) — carry AA with a heavy band that
+     holds through the whole copy region before releasing the footage. */
   @media (max-width: 768px) {
     .pagehero__scrim {
       background:
         linear-gradient(
           180deg,
           color-mix(in srgb, var(--bg) 88%, transparent) 0%,
-          color-mix(in srgb, var(--bg) 78%, transparent) 45%,
-          color-mix(in srgb, var(--bg) 30%, transparent) 70%,
+          color-mix(in srgb, var(--bg) 84%, transparent) 70%,
+          color-mix(in srgb, var(--bg) 42%, transparent) 88%,
           transparent 100%
         );
     }

@@ -1,0 +1,257 @@
+---
+/**
+ * The Stance (2026-06 design port, exploration variant D) — a sticky
+ * "We won't. / We will." panel pinned left while five ledger rows scroll
+ * past on the right. Each row pairs the refusal (quiet, honey) with the
+ * practice we hold instead (lead, bone); the honey→sage rule draws as the
+ * row enters (via the shared reveal's .is-in). No strikes, no crosses.
+ */
+import Eyebrow from './Eyebrow.astro';
+
+const holds = [
+  {
+    num: '01',
+    wont: 'Sell you a platform',
+    will: 'Build inside the tools you already own',
+    body: 'Nothing to license, nothing new to learn. If a problem is better solved by something you already pay for, we’ll say so — and bow out of that part.',
+  },
+  {
+    num: '02',
+    wont: 'Automate everything at once',
+    will: 'Take one bottleneck at a time',
+    body: 'Big-bang transformations fail loudly and expensively. Each automation proves the hours it saves before the next one begins — nothing critical rides on a single switch-flip.',
+  },
+  {
+    num: '03',
+    wont: 'Replace your team',
+    will: 'Hand the hours back to your people',
+    body: 'We automate tasks, not people. The hours go back to the judgment calls and the relationships — the work that actually needs a person.',
+  },
+  {
+    num: '04',
+    wont: 'Invent numbers',
+    will: 'Show results that are real, or none at all',
+    body: 'No logo walls, no made-up stats. When there are real results to show, they’ll be here — named and measured.',
+  },
+  {
+    num: '05',
+    wont: 'Ship and vanish',
+    will: 'Stay close after it ships',
+    body: 'Processes drift. We monitor and tune what we build, so you hear from us before something breaks — not after.',
+  },
+] as const;
+---
+
+<div class="stance-grid">
+  <aside class="stance-panel" data-reveal>
+    <Eyebrow>What we won&rsquo;t do</Eyebrow>
+    <h2 class="stance-title">
+      <span class="t-wont">We won&rsquo;t.</span><span class="t-will">We will.</span>
+    </h2>
+    <p class="stance-lede">
+      What we turn down is as deliberate as what we build. Five lines we hold &mdash; and what
+      each one gets you instead.
+    </p>
+    <p class="stance-count" aria-hidden="true">01 &mdash; 05</p>
+  </aside>
+
+  <ul class="hold-list">
+    {
+      holds.map(({ num, wont, will, body }, i) => (
+        <li class="hold" data-reveal style={`--reveal-delay: ${i * 70}ms`}>
+          <span class="hold__num">{num}</span>
+          <div class="hold__body">
+            <span class="hold__minilabel hold__minilabel--wont">We won&rsquo;t</span>
+            <p class="hold__wont">{wont}</p>
+            <span class="hold__line" aria-hidden="true" />
+            <div class="hold__will">
+              <span class="hold__minilabel hold__minilabel--will">We will</span>
+              <h3>{will}</h3>
+              <p>{body}</p>
+            </div>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .stance-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(3rem, 6vw, 4.5rem);
+    align-items: start;
+  }
+
+  .stance-panel {
+    position: sticky;
+    top: clamp(4rem, 12vh, 7rem);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .stance-title {
+    margin: 0;
+    font-weight: 500;
+    font-size: var(--text-display-xl);
+    line-height: var(--lh-display-xl);
+    letter-spacing: var(--track-display-xl);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stance-title .t-wont {
+    color: var(--muted);
+  }
+
+  .stance-title .t-will {
+    color: var(--fg);
+  }
+
+  .stance-lede {
+    margin: 0;
+    font-size: var(--text-body-l);
+    line-height: var(--lh-body-l);
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  .stance-count {
+    margin: var(--space-4) 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-inline);
+    line-height: var(--lh-mono-inline);
+    color: var(--accent-2);
+  }
+
+  .hold-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .hold {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    column-gap: var(--space-6);
+    align-items: start;
+    padding: var(--space-8) 0;
+    border-bottom: 1px solid var(--line);
+    transition: background-color var(--dur-base) var(--ease);
+  }
+
+  .hold__num {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-inline);
+    line-height: var(--lh-eyebrow);
+    padding-top: 0.1em;
+    color: var(--accent-2);
+  }
+
+  .hold__minilabel {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    line-height: var(--lh-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    text-transform: uppercase;
+    margin-bottom: var(--space-2);
+  }
+
+  .hold__minilabel--wont {
+    color: var(--accent-2);
+  }
+
+  .hold__minilabel--will {
+    color: var(--accent-text);
+  }
+
+  .hold__wont {
+    margin: 0;
+    font-size: var(--text-body-l);
+    line-height: var(--lh-body-l);
+    color: var(--muted);
+    text-wrap: balance;
+  }
+
+  /* the line we hold — draws from the refusal toward the practice */
+  .hold__line {
+    display: block;
+    width: 3rem;
+    height: 2px;
+    border-radius: 2px;
+    margin: var(--space-4) 0;
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--honey) 70%, transparent),
+      var(--sage)
+    );
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition:
+      transform 0.8s var(--ease),
+      box-shadow var(--dur-base) var(--ease);
+    transition-delay: calc(var(--reveal-delay, 0ms) + 350ms), 0ms;
+  }
+
+  .hold.is-in .hold__line {
+    transform: scaleX(1);
+  }
+
+  /* no-JS: the reveal system never runs, so commit the drawn state */
+  :global(html:not(.js)) .hold__line {
+    transform: scaleX(1);
+  }
+
+  .hold__will h3 {
+    margin: 0;
+    font-size: var(--text-h3);
+    line-height: 1.35;
+    letter-spacing: var(--track-h3);
+    font-weight: 500;
+    color: var(--fg);
+    text-wrap: balance;
+  }
+
+  .hold__will p {
+    margin: var(--space-2) 0 0;
+    max-width: 50ch;
+    font-size: var(--text-body-s);
+    line-height: var(--lh-body-s);
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  @media (hover: hover) {
+    .hold:hover {
+      background: color-mix(in srgb, var(--bone) 4%, transparent);
+    }
+    .hold:hover .hold__line {
+      box-shadow: 0 0 12px color-mix(in srgb, var(--sage) 45%, transparent);
+    }
+  }
+
+  /* below ~960px the panel sits above the rows and stops pinning */
+  @media (max-width: 960px) {
+    .stance-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+    }
+    .stance-panel {
+      position: static;
+    }
+    .stance-count {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hold__line {
+      transform: none;
+      transition: none;
+    }
+  }
+</style>

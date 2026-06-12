@@ -1,0 +1,279 @@
+---
+/**
+ * The Method — "how we actually work" as a living index (2026-06 design
+ * port). An editorial accordion: one step open at a time, advancing on its
+ * own every few seconds until the reader takes over (click, hover, or focus
+ * pauses/stops it). Reduced motion / no-JS: all four steps stay open as a
+ * plain list — that's the markup default; JS collapses to the first step.
+ */
+const steps = [
+  {
+    num: '01',
+    title: 'We sit with your team first',
+    word: 'Listen',
+    body: 'We watch where the hours actually go — the reports, the re-keying, the copy-paste nobody owns. The bottleneck worth fixing is rarely the one everyone complains about.',
+  },
+  {
+    num: '02',
+    title: 'We build small and prove it',
+    word: 'Prove',
+    body: 'One automation, end to end, measured against your real cases — before anyone signs up for more. You see the hours saved on your own work, not on a slide.',
+  },
+  {
+    num: '03',
+    title: 'We move to the next one',
+    word: 'Repeat',
+    body: 'With the first running and earning its keep, we take the next bottleneck in line. The work never stops while we do it — that’s the point of going one at a time.',
+  },
+  {
+    num: '04',
+    title: 'We stay close',
+    word: 'Tend',
+    body: 'Every automation we build, we monitor and tune. When your process changes, it changes with it — you hear from us before something drifts, not after it breaks.',
+  },
+] as const;
+---
+
+<div class="acc" data-reveal>
+  {
+    steps.map(({ num, title, word, body }) => (
+      <article class="acc__item is-open">
+        <h3 class="acc__h">
+          <button class="acc__head" type="button" aria-expanded="true">
+            <span class="acc__num">{num}</span>
+            <span class="acc__title">{title}</span>
+            <span class="acc__word">{word}</span>
+            <span class="acc__plus" aria-hidden="true">+</span>
+          </button>
+        </h3>
+        <div class="acc__body">
+          <div class="acc__body-inner">
+            <p>{body}</p>
+          </div>
+        </div>
+      </article>
+    ))
+  }
+</div>
+
+<script>
+  const acc = document.querySelector<HTMLElement>('.acc');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Reduced motion: leave the markup default — every step open, static.
+  if (acc && !reduce) {
+    const items = Array.from(acc.querySelectorAll<HTMLElement>('.acc__item'));
+    let idx = 0;
+    let stopped = false;
+    let paused = false;
+    let inView = false;
+
+    const setOpen = (target: HTMLElement | null) => {
+      items.forEach((it) => {
+        const open = it === target;
+        it.classList.toggle('is-open', open);
+        it.querySelector('.acc__head')?.setAttribute('aria-expanded', String(open));
+      });
+    };
+
+    // collapse to the first step before first paint — no animation flash
+    setOpen(items[0]);
+
+    items.forEach((it, i) => {
+      it.querySelector('.acc__head')?.addEventListener('click', () => {
+        stopped = true;
+        if (it.classList.contains('is-open')) {
+          setOpen(null);
+        } else {
+          idx = i;
+          setOpen(it);
+        }
+      });
+    });
+
+    acc.addEventListener('mouseenter', () => (paused = true));
+    acc.addEventListener('mouseleave', () => (paused = false));
+    acc.addEventListener('focusin', () => (paused = true));
+    acc.addEventListener('focusout', () => (paused = false));
+
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => entries.forEach((e) => (inView = e.isIntersecting)),
+        { threshold: 0.35 }
+      );
+      io.observe(acc);
+    } else {
+      inView = true;
+    }
+
+    setInterval(() => {
+      if (stopped || paused || !inView) return;
+      if (document.visibilityState !== 'visible') return;
+      idx = (idx + 1) % items.length;
+      setOpen(items[idx]);
+    }, 4500);
+  }
+</script>
+
+<style>
+  .acc {
+    --acc-gutter: clamp(2.25rem, 5vw, 3.5rem);
+    --acc-gap: clamp(1rem, 3vw, 2rem);
+    border-top: 1px solid var(--line);
+  }
+
+  .acc__item {
+    border-bottom: 1px solid var(--line);
+    transition: background-color var(--dur-base) var(--ease);
+  }
+
+  .acc__h {
+    margin: 0;
+  }
+
+  .acc__head {
+    display: grid;
+    grid-template-columns: var(--acc-gutter) minmax(0, 1fr) auto auto;
+    column-gap: var(--acc-gap);
+    align-items: baseline;
+    width: 100%;
+    margin: 0;
+    padding: clamp(1.5rem, 3.5vw, 2rem) 0;
+    background: none;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .acc__head:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: var(--radius-sm);
+  }
+
+  .acc__num {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-inline);
+    color: var(--accent-2);
+    transition: color var(--dur-base) var(--ease);
+  }
+
+  .acc__title {
+    font-size: var(--text-h1);
+    line-height: var(--lh-h1);
+    letter-spacing: var(--track-h1);
+    font-weight: 500;
+    color: color-mix(in srgb, var(--fg) 72%, var(--bg));
+    text-wrap: balance;
+    transition: color var(--dur-base) var(--ease);
+  }
+
+  .acc__word {
+    align-self: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    line-height: var(--lh-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color var(--dur-base) var(--ease);
+  }
+
+  /* the + rides in a ringed control so the row clearly reads as clickable */
+  .acc__plus {
+    align-self: center;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-full);
+    font-family: var(--font-mono);
+    font-size: var(--text-h3);
+    line-height: 1;
+    color: var(--muted);
+    transition:
+      transform 0.45s var(--ease),
+      color var(--dur-base) var(--ease),
+      border-color var(--dur-base) var(--ease),
+      background-color var(--dur-base) var(--ease);
+  }
+
+  /* collapsible body — the 0fr→1fr grid-row trick, no fixed heights */
+  .acc__body {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition:
+      grid-template-rows 0.5s var(--ease),
+      visibility 0s linear 0.5s;
+  }
+
+  .acc__body-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  .acc__body p {
+    margin: 0;
+    padding: 0 0 clamp(1.5rem, 3.5vw, 2rem) calc(var(--acc-gutter) + var(--acc-gap));
+    max-width: 58ch;
+    font-size: var(--text-body-l);
+    line-height: var(--lh-body-l);
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  .acc__item.is-open .acc__body {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition:
+      grid-template-rows 0.5s var(--ease),
+      visibility 0s linear 0s;
+  }
+
+  .acc__item.is-open .acc__title {
+    color: var(--fg);
+  }
+
+  .acc__item.is-open .acc__num,
+  .acc__item.is-open .acc__word {
+    color: var(--accent-text);
+  }
+
+  .acc__item.is-open .acc__plus {
+    transform: rotate(45deg);
+    color: var(--accent-text);
+    border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+    background: var(--sage-tint-13);
+  }
+
+  @media (hover: hover) {
+    .acc__item:not(.is-open):hover {
+      background: color-mix(in srgb, var(--bone) 4%, transparent);
+    }
+    .acc__head:hover .acc__title {
+      color: var(--fg);
+    }
+    .acc__head:hover .acc__plus {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+      color: var(--accent-text);
+    }
+  }
+
+  /* the step name drops away on narrow screens — number + title carry it */
+  @media (max-width: 600px) {
+    .acc__word {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .acc__body,
+    .acc__plus {
+      transition: none;
+    }
+  }
+</style>
