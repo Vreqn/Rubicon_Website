@@ -17,6 +17,8 @@ export interface Props {
   sample?: boolean;
   as?: 'h2' | 'h3';
   revealDelay?: number;
+  /** Slug hook for the StudyReader overlay (work page). */
+  studyId?: string;
 }
 
 const {
@@ -29,11 +31,13 @@ const {
   sample = false,
   as: Heading = 'h3',
   revealDelay,
+  studyId,
 } = Astro.props;
 ---
 
 <article
   class="study"
+  data-study={studyId}
   data-reveal
   style={revealDelay ? `--reveal-delay: ${revealDelay}ms` : undefined}
 >

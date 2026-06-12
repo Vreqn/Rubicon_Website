@@ -1,0 +1,593 @@
+---
+/**
+ * Case-study reader overlay (2026-06 design port) — opens from a study
+ * card's link or a /work/#<slug> deep link (used by the homepage cards),
+ * cloning that study's <template> into the dark panel. Closes on ✕,
+ * backdrop, or Esc; locks page scroll; traps focus while open (the comp
+ * only focused the close button — a real trap is required for a11y).
+ *
+ * The standalone /work/<slug>/ pages remain the no-JS + crawlable home of
+ * each study; this overlay is the in-page reading moment.
+ */
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  studies: CollectionEntry<'work'>[];
+}
+
+const { studies } = Astro.props;
+
+const rendered = await Promise.all(
+  studies.map(async (cs) => ({ cs, Content: (await render(cs)).Content }))
+);
+---
+
+{
+  rendered.map(({ cs, Content }) => (
+    <template data-study-tpl={cs.id}>
+      <div class="reader-banner" data-tint={cs.data.tint}>
+        <span class="reader-banner__kicker">{cs.data.sector}</span>
+        {cs.data.sample && (
+          <span class="reader-banner__sample">
+            <span class="dot" /> sample data &mdash; numbers illustrative
+          </span>
+        )}
+        <span class="reader-banner__metric">
+          {cs.data.metric.value}
+          {cs.data.metric.unit && <span class="unit">&thinsp;{cs.data.metric.unit}</span>}
+        </span>
+        <span class="reader-banner__cap">{cs.data.metric.caption}</span>
+      </div>
+      <div class="reader-body">
+        <div class="reader-meta">
+          <div>
+            <span class="k">Sector</span>
+            <span class="v">{cs.data.sector}</span>
+          </div>
+          {cs.data.timeline && (
+            <div>
+              <span class="k">Timeline</span>
+              <span class="v">{cs.data.timeline}</span>
+            </div>
+          )}
+          {cs.data.stack.length > 0 && (
+            <div>
+              <span class="k">Stack</span>
+              <span class="v">{cs.data.stack.join(' · ')}</span>
+            </div>
+          )}
+        </div>
+        <h2 class="reader-title">{cs.data.title}</h2>
+        {cs.data.lede && <p class="reader-lede">{cs.data.lede}</p>}
+        <div class="reader-md">
+          <Content />
+        </div>
+        {cs.data.stats.length > 0 && (
+          <div class="reader-stats">
+            {cs.data.stats.map(({ value, unit, label }) => (
+              <div class="reader-stat">
+                <span class="n">
+                  {value}
+                  {unit && <span class="u">&thinsp;{unit}</span>}
+                </span>
+                <span class="l">{label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        {cs.data.quote && (
+          <blockquote class="reader-quote">
+            <p>{cs.data.quote.text}</p>
+            <cite>{cs.data.quote.attribution}</cite>
+          </blockquote>
+        )}
+        <div class="reader-foot">
+          <span class="note">
+            Every engagement starts the same way &mdash; one manual task, automated end to end.
+          </span>
+          <a class="reader-foot__link" href="/contact/">
+            Start the conversation <span class="arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+      </div>
+    </template>
+  ))
+}
+
+<div class="reader" id="study-reader" role="dialog" aria-modal="true" aria-label="Case study" hidden>
+  <div class="reader__backdrop" data-close></div>
+  <div class="reader__panel" data-surface="dark">
+    <button class="reader__close" type="button" data-close aria-label="Close case study">&times;</button>
+    <div class="reader__content"></div>
+  </div>
+</div>
+
+<script>
+  const reader = document.getElementById('study-reader');
+  const content = reader?.querySelector<HTMLElement>('.reader__content');
+  const panel = reader?.querySelector<HTMLElement>('.reader__panel');
+
+  if (reader && content && panel) {
+    let lastFocus: HTMLElement | null = null;
+    let hideTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const open = (id: string) => {
+      const tpl = document.querySelector<HTMLTemplateElement>(`template[data-study-tpl="${id}"]`);
+      if (!tpl) return;
+      if (hideTimer) {
+        clearTimeout(hideTimer);
+        hideTimer = null;
+      }
+      content.innerHTML = '';
+      content.appendChild(tpl.content.cloneNode(true));
+      reader.hidden = false;
+      void reader.offsetWidth; // reflow so the open transition runs
+      reader.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      panel.scrollTop = 0;
+      reader.querySelector<HTMLButtonElement>('.reader__close')?.focus();
+    };
+
+    const close = () => {
+      if (!reader.classList.contains('is-open')) return;
+      reader.classList.remove('is-open');
+      document.body.style.overflow = '';
+      hideTimer = setTimeout(() => {
+        if (!reader.classList.contains('is-open')) reader.hidden = true;
+      }, 320);
+      // a deep-linked hash would block re-opening the same study — clear it
+      if (location.hash) history.replaceState(null, '', location.pathname);
+      lastFocus?.focus();
+    };
+
+    // Study links open the reader in place (element-level listener, so the
+    // page-transition curtain sees defaultPrevented and stays out of it).
+    // The whole card already proxies clicks to its link (StudyCard).
+    document.querySelectorAll<HTMLAnchorElement>('.study .study__link').forEach((a) => {
+      a.addEventListener('click', (e) => {
+        const id = a.closest<HTMLElement>('.study')?.dataset.study;
+        if (!id) return;
+        e.preventDefault();
+        lastFocus = a;
+        open(id);
+      });
+    });
+
+    reader.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('[data-close]')) close();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') close();
+
+      // focus trap — wrap Tab at the panel edges while open
+      if (e.key === 'Tab' && reader.classList.contains('is-open')) {
+        const focusables = panel.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        const active = document.activeElement;
+        if (e.shiftKey && (active === first || !panel.contains(active))) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && active === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    // Deep link: /work/#<slug> opens that study's reader (homepage cards).
+    const openFromHash = () => {
+      const id = location.hash.replace(/^#/, '');
+      if (id && document.querySelector(`template[data-study-tpl="${id}"]`)) open(id);
+    };
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
+  }
+</script>
+
+<style>
+  .reader {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: clamp(1rem, 5vh, 4rem) var(--container-pad);
+    overflow-y: auto;
+  }
+
+  .reader[hidden] {
+    display: none;
+  }
+
+  /* Backdrop — dims + blurs the page behind. */
+  .reader__backdrop {
+    position: fixed;
+    inset: 0;
+    background: color-mix(in srgb, var(--pine) 76%, transparent);
+    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(7px);
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease);
+  }
+
+  .reader.is-open .reader__backdrop {
+    opacity: 1;
+  }
+
+  .reader__panel {
+    position: relative;
+    z-index: 1;
+    width: min(720px, 100%);
+    margin: auto 0;
+    background: color-mix(in srgb, var(--bone) 5%, var(--pine));
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 44px 100px -34px color-mix(in srgb, var(--pine) 72%, transparent);
+    transform: translateY(20px) scale(0.985);
+    opacity: 0;
+    transition:
+      transform var(--dur-base) var(--ease),
+      opacity var(--dur-base) var(--ease);
+  }
+
+  .reader.is-open .reader__panel {
+    transform: none;
+    opacity: 1;
+  }
+
+  .reader__close {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    z-index: 3;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border-radius: var(--radius-full);
+    border: 1px solid color-mix(in srgb, var(--bone) 26%, transparent);
+    background: color-mix(in srgb, var(--pine) 55%, transparent);
+    color: var(--bone);
+    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    line-height: 1;
+    cursor: pointer;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    transition:
+      background-color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease),
+      transform var(--dur-fast) var(--ease);
+  }
+
+  .reader__close:hover {
+    background: color-mix(in srgb, var(--pine) 80%, transparent);
+    border-color: var(--accent);
+    transform: rotate(90deg);
+  }
+
+  /* ---- Cloned template content (lives under .reader__content) ---- */
+  .reader :global(.reader-banner) {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-height: 232px;
+    padding: var(--space-8);
+    isolation: isolate;
+  }
+
+  .reader :global(.reader-banner[data-tint='sage']) {
+    background: linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--sage) 26%, var(--pine)) 0%,
+      var(--pine) 72%
+    );
+  }
+  .reader :global(.reader-banner[data-tint='honey']) {
+    background: linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--honey) 24%, var(--pine)) 0%,
+      var(--pine) 72%
+    );
+  }
+  .reader :global(.reader-banner[data-tint='forest']) {
+    background: linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--forest) 82%, var(--pine)) 0%,
+      var(--pine) 78%
+    );
+  }
+
+  .reader :global(.reader-banner__kicker) {
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    line-height: var(--lh-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .reader :global(.reader-banner__sample) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: fit-content;
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid color-mix(in srgb, var(--accent-2) 40%, transparent);
+    border-radius: var(--radius-full);
+  }
+
+  .reader :global(.reader-banner__sample .dot) {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--accent-2);
+  }
+
+  .reader :global(.reader-banner__metric) {
+    margin-top: auto;
+    font-weight: 500;
+    font-size: clamp(2.75rem, 1.8rem + 3vw, 3.75rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .reader :global(.reader-banner[data-tint='sage'] .reader-banner__metric) {
+    color: var(--sage);
+  }
+  .reader :global(.reader-banner[data-tint='honey'] .reader-banner__metric) {
+    color: var(--honey);
+  }
+  .reader :global(.reader-banner[data-tint='forest'] .reader-banner__metric) {
+    color: var(--sage);
+  }
+
+  .reader :global(.reader-banner__metric .unit) {
+    font-size: 0.38em;
+    letter-spacing: 0;
+    color: var(--muted);
+  }
+
+  .reader :global(.reader-banner__cap) {
+    font-size: var(--text-body-s);
+    line-height: var(--lh-body-s);
+    color: var(--muted);
+    max-width: 28ch;
+  }
+
+  .reader :global(.reader-body) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    padding: clamp(1.75rem, 4vw, 3rem);
+  }
+
+  .reader :global(.reader-meta) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-8);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .reader :global(.reader-meta div) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .reader :global(.reader-meta .k) {
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    text-transform: uppercase;
+    color: var(--accent-2);
+  }
+
+  .reader :global(.reader-meta .v) {
+    font-size: var(--text-body-s);
+    color: var(--fg);
+  }
+
+  .reader :global(.reader-title) {
+    margin: 0;
+    font-weight: 500;
+    font-size: var(--text-h1);
+    line-height: var(--lh-h1);
+    letter-spacing: var(--track-h1);
+    color: var(--fg);
+    text-wrap: balance;
+  }
+
+  .reader :global(.reader-lede) {
+    margin: calc(-1 * var(--space-5)) 0 0;
+    font-size: var(--text-body-l);
+    line-height: var(--lh-body-l);
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  /* Markdown body — ## section headings render as the mono labels */
+  .reader :global(.reader-md) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .reader :global(.reader-md h2) {
+    margin: var(--space-5) 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    line-height: var(--lh-eyebrow);
+    letter-spacing: var(--track-eyebrow);
+    text-transform: uppercase;
+    font-weight: 400;
+    color: var(--accent-text);
+  }
+
+  .reader :global(.reader-md h2:first-child) {
+    margin-top: 0;
+  }
+
+  .reader :global(.reader-md p) {
+    margin: 0;
+    font-size: var(--text-body-m);
+    line-height: var(--lh-body-m);
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  .reader :global(.reader-stats) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+
+  .reader :global(.reader-stat) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-6);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--bone) 3%, transparent);
+  }
+
+  .reader :global(.reader-stat .n) {
+    font-weight: 500;
+    font-size: var(--text-h1);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+  }
+
+  .reader :global(.reader-stat .n .u) {
+    font-size: 0.5em;
+    letter-spacing: 0;
+    color: var(--muted);
+  }
+
+  .reader :global(.reader-stat .l) {
+    font-size: var(--text-caption);
+    line-height: var(--lh-caption);
+    color: var(--muted);
+  }
+
+  /* Pull quote — hung tilde + mono attribution */
+  .reader :global(.reader-quote) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin: 0;
+    padding: var(--space-2) 0;
+  }
+
+  .reader :global(.reader-quote p) {
+    position: relative;
+    margin: 0;
+    padding-left: var(--index-outdent);
+    font-size: var(--text-h3);
+    line-height: 1.5;
+    font-weight: 500;
+    color: var(--fg);
+    text-wrap: pretty;
+  }
+
+  .reader :global(.reader-quote p::before) {
+    content: '~';
+    position: absolute;
+    left: 0;
+    top: -0.05em;
+    font-family: var(--font-mono);
+    font-size: 1.6em;
+    line-height: 1;
+    color: var(--accent-text);
+  }
+
+  .reader :global(.reader-quote cite) {
+    padding-left: var(--index-outdent);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-inline);
+    font-style: normal;
+    letter-spacing: 0.02em;
+    color: var(--accent-2);
+  }
+
+  .reader :global(.reader-foot) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    flex-wrap: wrap;
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--line);
+  }
+
+  .reader :global(.reader-foot .note) {
+    font-size: var(--text-body-s);
+    color: var(--muted);
+    max-width: 28ch;
+  }
+
+  .reader :global(.reader-foot__link) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-body-m);
+    font-weight: 500;
+    color: var(--accent-text);
+    text-decoration: none;
+  }
+
+  .reader :global(.reader-foot__link .arrow) {
+    font-family: var(--font-mono);
+    transition: transform var(--dur-base) var(--ease);
+  }
+
+  .reader :global(.reader-foot__link:hover .arrow) {
+    transform: translateX(3px);
+  }
+
+  @media (max-width: 768px) {
+    .reader :global(.reader-meta) {
+      gap: var(--space-6);
+    }
+    .reader :global(.reader-stats) {
+      grid-template-columns: 1fr;
+    }
+    .reader :global(.reader-quote p),
+    .reader :global(.reader-quote cite) {
+      padding-left: 0;
+    }
+    .reader :global(.reader-quote p::before) {
+      position: static;
+      display: block;
+      margin-bottom: var(--space-2);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reader__backdrop,
+    .reader__panel {
+      transition: none;
+    }
+    .reader__close:hover {
+      transform: none;
+    }
+  }
+</style>

@@ -1,9 +1,10 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Section from '../../components/Section.astro';
-import SectionHeader from '../../components/SectionHeader.astro';
-import CaseStudyCard from '../../components/CaseStudyCard.astro';
+import PageHero from '../../components/PageHero.astro';
+import StudyCard from '../../components/StudyCard.astro';
+import StudyReader from '../../components/StudyReader.astro';
+import CtaBand from '../../components/CtaBand.astro';
 
 const caseStudies = (await getCollection('work', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
@@ -11,53 +12,118 @@ const caseStudies = (await getCollection('work', ({ data }) => !data.draft)).sor
 ---
 
 <BaseLayout
-  title="Rubicon Workflows | Case Studies — Automation in Vancouver"
+  title="Rubicon Workflows | Work — Automation Case Studies in Vancouver"
   description="Case studies from real automation projects for small and mid-sized businesses — real bottlenecks, solved one step at a time. Vancouver, BC."
   surface="dark"
+  headerOverlay
 >
-  <Section surface="dark">
-    <SectionHeader
-      as="h1"
-      eyebrow="Case studies"
-      title="Real bottlenecks, solved one step at a time"
-      lede="Every project starts with one workflow that's eating a team's hours. Here's what that looks like in practice."
-    />
-    {
-      caseStudies.length > 0 ? (
-        <ul class="work-grid">
-          {caseStudies.map((cs) => (
-            <li>
-              <CaseStudyCard
-                as="h2"
+  <PageHero
+    title="Proof, not promises."
+    lede="Real engagements, real numbers. The manual work we found, the automation we built, and the hours it handed back to the team."
+    meta={['Selected engagements', 'one bottleneck at a time']}
+    videoSrc="/video/glow.mp4"
+    poster="/video/glow-poster.jpg"
+    maxOpacity={0.85}
+    fit="frame"
+  />
+
+  <section data-surface="dark" class="section work">
+    <div class="container">
+      <div class="shead" data-reveal>
+        <h2>Selected work.</h2>
+        <p class="shead__lede">
+          Each one started as a single manual task eating a team&rsquo;s week. We automated it
+          end to end &mdash; and measured what came back.
+        </p>
+      </div>
+
+      {
+        caseStudies.length > 0 ? (
+          <div class="studies" data-tilt-grid>
+            {caseStudies.map((cs, i) => (
+              <StudyCard
                 title={cs.data.title}
-                description={cs.data.description}
+                summary={cs.data.summary}
                 sector={cs.data.sector}
+                metric={cs.data.metric}
+                tint={cs.data.tint}
                 href={`/work/${cs.id}/`}
+                sample={cs.data.sample}
+                studyId={cs.id}
+                revealDelay={60 + i * 80}
               />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <div class="work-empty">
-          <p>
-            Case studies are being written up — we publish them only with real, verified
-            outcomes, so they take a little longer. In the meantime, we're happy to walk you
-            through the work directly: <a href="/contact/">ask us about it</a>.
-          </p>
-        </div>
-      )
-    }
-  </Section>
+            ))}
+          </div>
+        ) : (
+          <div class="work-empty">
+            <p>
+              Case studies are being written up — we publish them only with real, verified
+              outcomes, so they take a little longer. In the meantime, we're happy to walk you
+              through the work directly: <a href="/contact/">ask us about it</a>.
+            </p>
+          </div>
+        )
+      }
+
+      <a class="work__contact" href="/contact/">Start the conversation <span class="arrow" aria-hidden="true">&rarr;</span></a>
+    </div>
+  </section>
+
+  {caseStudies.length > 0 && <StudyReader studies={caseStudies} />}
+
+  <CtaBand
+    id="cta"
+    title="Tell us what’s eating your team’s time."
+    lede="Book the scoping call. We’ll point to the one task worth automating first — no pitch, no commitment."
+    ctaLabel="Start the conversation"
+    ctaHref="/contact/"
+  />
 </BaseLayout>
 
+<script>
+  import '../../scripts/tilt.js';
+</script>
+
 <style>
-  .work-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-    gap: var(--space-6);
-    list-style: none;
+  .section {
+    position: relative;
+    padding-block: var(--section-pad);
+  }
+
+  .shead {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    max-width: 40rem;
+    margin-bottom: var(--space-12);
+  }
+
+  .shead h2 {
     margin: 0;
-    padding: 0;
+    font-weight: 500;
+    font-size: var(--text-display-l);
+    line-height: var(--lh-display-l);
+    letter-spacing: var(--track-display-l);
+    color: var(--fg);
+    text-wrap: balance;
+  }
+
+  .shead__lede {
+    margin: 0;
+    font-size: var(--text-body-l);
+    line-height: var(--lh-body-l);
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  .studies {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+  }
+
+  .studies[data-tilt='on'] {
+    perspective: 1200px;
   }
 
   .work-empty {
@@ -69,5 +135,32 @@ const caseStudies = (await getCollection('work', ({ data }) => !data.draft)).sor
 
   .work-empty a {
     color: var(--accent);
+  }
+
+  .work__contact {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-12);
+    font-size: var(--text-body-m);
+    font-weight: 500;
+    color: var(--accent-text);
+    text-decoration: none;
+    width: fit-content;
+  }
+
+  .work__contact .arrow {
+    font-family: var(--font-mono);
+    transition: transform var(--dur-base) var(--ease);
+  }
+
+  .work__contact:hover .arrow {
+    transform: translateX(3px);
+  }
+
+  @media (max-width: 768px) {
+    .studies {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

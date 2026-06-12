@@ -1,0 +1,188 @@
+---
+/**
+ * Interior page hero (2026-06 design port) — footage runs behind an
+ * overlaid header; left-aligned editorial copy hangs in the upper third.
+ *
+ * `fit="frame"` shows the FULL native 1920×1080 frame, pinned to the top at
+ * 100% width and never cropped, bottom-feathered into the Pine page
+ * (services/work treatment). `fit="cover"` fills the hero box (about/contact).
+ *
+ * The scrim is the AA mechanism over the footage — heavier behind the copy
+ * than the comp's, because the comp's immersive scrim fails WCAG against
+ * bright frames (verify with scripts/video-aa-check.mjs on every page).
+ */
+import BgVideo from './BgVideo.astro';
+
+interface Props {
+  title: string;
+  /** Trailing muted phrase appended to the title (the comp's <em>). */
+  titleMuted?: string;
+  lede?: string;
+  /** Mono meta line under the lede, items joined with a / separator. */
+  meta?: string[];
+  videoSrc: string;
+  poster?: string;
+  maxOpacity?: number;
+  fit?: 'frame' | 'cover';
+}
+
+const {
+  title,
+  titleMuted,
+  lede,
+  meta = [],
+  videoSrc,
+  poster,
+  maxOpacity = 0.85,
+  fit = 'frame',
+} = Astro.props;
+---
+
+<section data-surface="dark" class:list={['pagehero', `pagehero--${fit}`]}>
+  <BgVideo
+    src={videoSrc}
+    poster={poster}
+    maxOpacity={maxOpacity}
+    class={`pagehero-video pagehero-video--${fit}`}
+  />
+  <div class="pagehero__scrim" aria-hidden="true"></div>
+  <div class="pagehero__inner">
+    <h1 class="pagehero__title">{title}{titleMuted && <em> {titleMuted}</em>}</h1>
+    {lede && <p class="pagehero__lede">{lede}</p>}
+    {
+      meta.length > 0 && (
+        <p class="pagehero__meta">
+          {meta.map((m, i) => (
+            <>
+              {i > 0 && <span class="sep" aria-hidden="true">/</span>}
+              <span>{m}</span>
+            </>
+          ))}
+        </p>
+      )
+    }
+    <slot />
+  </div>
+</section>
+
+<style>
+  .pagehero {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    padding-top: clamp(7rem, 12vw, 10rem);
+    padding-bottom: var(--space-24);
+  }
+
+  /* Tall enough to contain the full uncropped video frame (1920×1080 →
+     56.25vw at 100% width) so nothing is clipped. */
+  .pagehero--frame {
+    min-height: 56.25vw;
+  }
+
+  /* Footage layer — full native frame pinned to the top, bottom feathered so
+     it dissolves into the Pine page. (cover variant fills the box.) */
+  .pagehero :global(.pagehero-video--frame) {
+    height: auto;
+    aspect-ratio: 1920 / 1080;
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 64%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0%, #000 64%, transparent 100%);
+  }
+
+  .pagehero :global(.pagehero-video--cover) {
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 58%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0%, #000 58%, transparent 100%);
+  }
+
+  /* Scrim — Pine concentrated behind the left copy block in the upper third;
+     the rest stays clear so the footage carries. Heavier than the comp's:
+     AA over worst-case frames is a hard gate. */
+  .pagehero__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        90% 80% at 26% 32%,
+        color-mix(in srgb, var(--bg) 88%, transparent) 0%,
+        color-mix(in srgb, var(--bg) 84%, transparent) 52%,
+        transparent 74%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--bg) 42%, transparent) 0%,
+        color-mix(in srgb, var(--bg) 10%, transparent) 36%,
+        transparent 58%
+      );
+  }
+
+  .pagehero__inner {
+    position: relative;
+    z-index: 2;
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--container-pad);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-6);
+  }
+
+  .pagehero__title {
+    margin: 0;
+    max-width: 18ch;
+    font-weight: 500;
+    font-size: var(--text-display-xl);
+    line-height: var(--lh-display-xl);
+    letter-spacing: var(--track-display-xl);
+    color: var(--fg);
+    text-wrap: balance;
+  }
+
+  .pagehero__title em {
+    font-style: normal;
+    color: var(--muted);
+  }
+
+  .pagehero__lede {
+    margin: 0;
+    max-width: 42rem;
+    font-size: var(--text-body-l);
+    line-height: var(--lh-body-l);
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  .pagehero__meta {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: var(--space-2) 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-inline);
+    letter-spacing: 0.02em;
+    color: var(--accent-2);
+  }
+
+  .pagehero__meta .sep {
+    color: var(--line);
+  }
+
+  /* On small screens the frame-fit footage is a short strip sitting right
+     behind the title where the desktop radial doesn't reach — carry AA with
+     a heavier top band instead. */
+  @media (max-width: 768px) {
+    .pagehero__scrim {
+      background:
+        linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--bg) 88%, transparent) 0%,
+          color-mix(in srgb, var(--bg) 78%, transparent) 45%,
+          color-mix(in srgb, var(--bg) 30%, transparent) 70%,
+          transparent 100%
+        );
+    }
+  }
+</style>
